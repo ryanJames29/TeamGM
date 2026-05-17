@@ -9,7 +9,7 @@ export const HOME_COPY = {
   welcomeTitle: 'Welcome to TeamGM',
   getStarted: 'get started',
   tryEditingTitle: 'Try editing',
-  tryEditingHint: 'src/app/(tabs)/index.tsx',
+  tryEditingHint: 'src/screens/home-screen.tsx',
   devToolsTitle: 'Dev tools',
   freshStartTitle: 'Fresh start',
   freshStartHint: 'npm run reset-project',

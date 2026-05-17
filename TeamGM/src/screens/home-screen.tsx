@@ -26,8 +26,8 @@ function getDevMenuHint() {
   return isAndroid ? HOME_COPY.devMenuAndroidShortcut : HOME_COPY.devMenuIosShortcut;
 }
 
-// Home tab with starter hints
-export default function HomeScreen() {
+// Home tab screen
+export function HomeScreen() {
   const devMenuHint = getDevMenuHint();
   const showWebBadge = Platform.OS === 'web';
   const showDeviceDevHint = Device.isDevice && Platform.OS !== 'web';

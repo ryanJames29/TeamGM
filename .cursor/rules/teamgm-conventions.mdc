@@ -15,6 +15,7 @@ alwaysApply: true
 - User-facing strings live in `src/constants/copy.ts`.
 - Use `@/` imports (`@` → `src/`). Assets use `@/assets/...`.
 - Legacy `ThemedText` / `ThemedView` are deprecated; migrate to Gluestack `Text` / `Box` with `className`.
+- **Routing:** only route files live in `src/app/` (`index.tsx`, `scores.tsx`, etc.). Screen UI lives in `src/screens/` (not under `app/` — Expo treats every `app` file as a route). Tab labels use `tabBarLabel` in `src/navigation/tab-options.ts`. `<Tabs>` is rendered in `src/app/_layout.tsx`.
 
 ```tsx
 // ❌ BAD
