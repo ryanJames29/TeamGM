@@ -282,7 +282,7 @@ export const config = {
 
     /* Background */
     '--color-background-0': '23 26 33',
-    '--color-background-50': '33 38 46',
+    '--color-background-50': '17 20 27',
     '--color-background-100': '65 64 64',
     '--color-background-200': '83 82 82',
     '--color-background-300': '116 116 116',

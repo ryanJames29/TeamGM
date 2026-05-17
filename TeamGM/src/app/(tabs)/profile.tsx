@@ -1,44 +1,19 @@
-import { StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from 'react';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { ScreenShell } from '@/components/screen-shell';
+import { Text } from '@/components/ui/text';
+import { PROFILE_COPY } from '@/constants/copy';
 
+// Profile tab placeholder
 export default function ProfileScreen() {
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedText type="title" style={styles.title}>
-          Profile
-        </ThemedText>
-        <ThemedText themeColor="textSecondary" style={styles.subtitle}>
-          Your account and settings will live here.
-        </ThemedText>
-      </SafeAreaView>
-    </ThemedView>
+    <ScreenShell>
+      <Text size="4xl" bold className="text-center text-teamgm-text-primary">
+        {PROFILE_COPY.title}
+      </Text>
+      <Text size="md" className="text-center text-teamgm-text-muted">
+        {PROFILE_COPY.subtitle}
+      </Text>
+    </ScreenShell>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.two,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  subtitle: {
-    textAlign: 'center',
-  },
-});

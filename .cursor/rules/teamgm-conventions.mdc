@@ -9,8 +9,11 @@ alwaysApply: true
 
 - Prefer **NativeWind / Tailwind** (`className`) for layout, spacing, colors, and typography whenever it applies.
 - Use **Gluestack UI** components for UI primitives (Text, Box, Button, Input, etc.). Do not use React Native `Text`/`View`/`Pressable` for new UI unless the user explicitly asks otherwise.
-- Copy or extend components from `TeamGM/src/components/ui/` per Gluestack v3 patterns. Theme tokens live in `src/constants/theme.ts` and Gluestack provider config.
+- Copy or extend components from `TeamGM/src/components/ui/` per Gluestack v3 patterns.
+- **Brand colors** are defined in `TeamGM/tailwind.config.js` (`teamgm.*`) and sourced from `src/constants/brand-colors.js` (re-exported in `colors.ts`). Use Tailwind classes: `bg-teamgm-app`, `bg-teamgm-tab-bar`, `bg-teamgm-surface`, `text-teamgm-text-primary`, `text-teamgm-text-muted`.
+- User-facing strings live in `src/constants/copy.ts`.
 - Use `@/` imports (`@` → `src/`). Assets use `@/assets/...`.
+- Legacy `ThemedText` / `ThemedView` are deprecated; migrate to Gluestack `Text` / `Box` with `className`.
 
 ```tsx
 // ❌ BAD

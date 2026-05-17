@@ -1,44 +1,19 @@
-import { StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from 'react';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { ScreenShell } from '@/components/screen-shell';
+import { Text } from '@/components/ui/text';
+import { SCORES_COPY } from '@/constants/copy';
 
+// Scores tab placeholder
 export default function ScoresScreen() {
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedText type="title" style={styles.title}>
-          Scores
-        </ThemedText>
-        <ThemedText themeColor="textSecondary" style={styles.subtitle}>
-          Live scores and game results will appear here.
-        </ThemedText>
-      </SafeAreaView>
-    </ThemedView>
+    <ScreenShell>
+      <Text size="4xl" bold className="text-center text-teamgm-text-primary">
+        {SCORES_COPY.title}
+      </Text>
+      <Text size="md" className="text-center text-teamgm-text-muted">
+        {SCORES_COPY.subtitle}
+      </Text>
+    </ScreenShell>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.two,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  subtitle: {
-    textAlign: 'center',
-  },
-});
