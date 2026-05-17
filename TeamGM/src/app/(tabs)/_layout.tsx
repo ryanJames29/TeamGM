@@ -28,17 +28,19 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="scores"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, size }) => <Ionicons name="compass" size={size} color={color} />,
+          title: 'Scores',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="stats-chart" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="team"
+        name="mygm"
         options={{
-          title: 'Team',
-          tabBarIcon: ({ color, size }) => <Ionicons name="people" size={size} color={color} />,
+          title: 'myGM',
+          tabBarIcon: ({ color, size }) => <Ionicons name="clipboard" size={size} color={color} />,
         }}
       />
       <Tabs.Screen

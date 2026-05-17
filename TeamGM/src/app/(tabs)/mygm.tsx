@@ -5,12 +5,12 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 
-export default function TeamScreen() {
+export default function MyGMScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ThemedText type="title" style={styles.title}>
-          Team
+          myGM
         </ThemedText>
         <ThemedText themeColor="textSecondary" style={styles.subtitle}>
           Manage your roster and lineups here.
