@@ -3,9 +3,9 @@ import React from 'react';
 import { Platform } from 'react-native';
 
 import { AnimatedIcon } from '@/components/animated-icon';
-import { ScreenShell } from '@/components/screen-shell';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { WebBadge } from '@/components/web-badge';
 import { HOME_COPY } from '@/constants/copy';
 
@@ -33,62 +33,64 @@ export default function HomeScreen() {
   const showDeviceDevHint = Device.isDevice && Platform.OS !== 'web';
 
   return (
-    <ScreenShell>
-      <Box className="flex-1 items-center justify-center gap-4 px-4">
+    <VStack className="flex-1 bg-teamgm-app p-6">
+      <VStack className="flex-1 items-center justify-center" space="lg">
         <AnimatedIcon />
         <Text size="4xl" bold className="text-center text-teamgm-text-primary">
           {HOME_COPY.welcomeTitle}
         </Text>
-      </Box>
+      </VStack>
 
       <Text size="xs" bold className="uppercase text-teamgm-text-primary">
         {HOME_COPY.getStarted}
       </Text>
 
-      <Box className="w-full gap-3 rounded-3xl bg-teamgm-surface px-4 py-6">
-        <Box className="gap-1">
-          <Text size="sm" bold className="text-teamgm-text-primary">
-            {HOME_COPY.tryEditingTitle}
-          </Text>
-          <Text size="xs" className="font-mono text-teamgm-text-muted">
-            {HOME_COPY.tryEditingHint}
-          </Text>
-        </Box>
+      <Box className="mt-4 w-full rounded-3xl bg-teamgm-surface px-4 py-6">
+        <VStack space="md">
+          <VStack space="xs">
+            <Text size="sm" bold className="text-teamgm-text-primary">
+              {HOME_COPY.tryEditingTitle}
+            </Text>
+            <Text size="xs" className="font-mono text-teamgm-text-muted">
+              {HOME_COPY.tryEditingHint}
+            </Text>
+          </VStack>
 
-        <Box className="gap-1">
-          <Text size="sm" bold className="text-teamgm-text-primary">
-            {HOME_COPY.devToolsTitle}
-          </Text>
-          {devMenuHint !== null && (
-            <Text size="xs" className="text-teamgm-text-muted">
-              {HOME_COPY.devMenuSimulatorPrefix}{' '}
-              <Text size="xs" className="font-mono text-teamgm-text-muted">
-                {devMenuHint}
+          <VStack space="xs">
+            <Text size="sm" bold className="text-teamgm-text-primary">
+              {HOME_COPY.devToolsTitle}
+            </Text>
+            {devMenuHint !== null && (
+              <Text size="xs" className="text-teamgm-text-muted">
+                {HOME_COPY.devMenuSimulatorPrefix}{' '}
+                <Text size="xs" className="font-mono text-teamgm-text-muted">
+                  {devMenuHint}
+                </Text>
               </Text>
-            </Text>
-          )}
-          {showDeviceDevHint && (
-            <Text size="xs" className="text-teamgm-text-muted">
-              {HOME_COPY.devMenuDeviceShake}{' '}
-              <Text size="xs" className="font-mono text-teamgm-text-muted">
-                {HOME_COPY.devMenuDeviceKey}
-              </Text>{' '}
-              {HOME_COPY.devMenuDeviceSuffix}
-            </Text>
-          )}
-        </Box>
+            )}
+            {showDeviceDevHint && (
+              <Text size="xs" className="text-teamgm-text-muted">
+                {HOME_COPY.devMenuDeviceShake}{' '}
+                <Text size="xs" className="font-mono text-teamgm-text-muted">
+                  {HOME_COPY.devMenuDeviceKey}
+                </Text>{' '}
+                {HOME_COPY.devMenuDeviceSuffix}
+              </Text>
+            )}
+          </VStack>
 
-        <Box className="gap-1">
-          <Text size="sm" bold className="text-teamgm-text-primary">
-            {HOME_COPY.freshStartTitle}
-          </Text>
-          <Text size="xs" className="font-mono text-teamgm-text-muted">
-            {HOME_COPY.freshStartHint}
-          </Text>
-        </Box>
+          <VStack space="xs">
+            <Text size="sm" bold className="text-teamgm-text-primary">
+              {HOME_COPY.freshStartTitle}
+            </Text>
+            <Text size="xs" className="font-mono text-teamgm-text-muted">
+              {HOME_COPY.freshStartHint}
+            </Text>
+          </VStack>
+        </VStack>
       </Box>
 
       {showWebBadge && <WebBadge />}
-    </ScreenShell>
+    </VStack>
   );
 }

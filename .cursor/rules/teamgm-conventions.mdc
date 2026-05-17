@@ -8,7 +8,8 @@ alwaysApply: true
 ## UI: Tailwind + Gluestack
 
 - Prefer **NativeWind / Tailwind** (`className`) for layout, spacing, colors, and typography whenever it applies.
-- Use **Gluestack UI** components for UI primitives (Text, Box, Button, Input, etc.). Do not use React Native `Text`/`View`/`Pressable` for new UI unless the user explicitly asks otherwise.
+- Use **Gluestack UI** components for UI primitives (Text, Box, VStack, Button, etc.). Do not use React Native `Text`/`View`/`Pressable` for new UI unless the user explicitly asks otherwise.
+- **Screens** use root `VStack` with `className="flex-1 bg-teamgm-app …"`. Use `Box` for surfaces/cards only, not full-screen layout.
 - Copy or extend components from `TeamGM/src/components/ui/` per Gluestack v3 patterns.
 - **Brand colors** are defined in `TeamGM/tailwind.config.js` (`teamgm.*`) and sourced from `src/constants/brand-colors.js` (re-exported in `colors.ts`). Use Tailwind classes: `bg-teamgm-app`, `bg-teamgm-tab-bar`, `bg-teamgm-surface`, `text-teamgm-text-primary`, `text-teamgm-text-muted`.
 - User-facing strings live in `src/constants/copy.ts`.
@@ -22,9 +23,9 @@ import { Text, View, Pressable } from 'react-native';
 
 // ✅ GOOD
 import { Box, Button, ButtonText } from '@/components/ui/button';
-<Box className="px-4 py-2">
+<VStack className="flex-1 bg-teamgm-app px-4 py-2">
   <Button><ButtonText>{LABELS.save}</ButtonText></Button>
-</Box>
+</VStack>
 ```
 
 ## Logic: Evaluate Outside Conditionals
