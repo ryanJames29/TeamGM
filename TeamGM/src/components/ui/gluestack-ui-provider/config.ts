@@ -281,8 +281,8 @@ export const config = {
     '--color-outline-950': '253 254 254',
 
     /* Background */
-    '--color-background-0': '18 18 18',
-    '--color-background-50': '39 38 37',
+    '--color-background-0': '23 26 33',
+    '--color-background-50': '33 38 46',
     '--color-background-100': '65 64 64',
     '--color-background-200': '83 82 82',
     '--color-background-300': '116 116 116',
@@ -298,7 +298,7 @@ export const config = {
     '--color-background-error': '66 43 43',
     '--color-background-warning': '65 47 35',
     '--color-background-success': '28 43 33',
-    '--color-background-muted': '51 51 51',
+    '--color-background-muted': '33 38 46',
     '--color-background-info': '26 40 46',
 
     /* Focus Ring Indicator  */

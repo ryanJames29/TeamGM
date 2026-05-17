@@ -1,0 +1,70 @@
+---
+description: Core TeamGM coding conventions (UI, logic, text, comments)
+alwaysApply: true
+---
+
+# TeamGM Conventions
+
+## UI: Tailwind + Gluestack
+
+- Prefer **NativeWind / Tailwind** (`className`) for layout, spacing, colors, and typography whenever it applies.
+- Use **Gluestack UI** components for UI primitives (Text, Box, Button, Input, etc.). Do not use React Native `Text`/`View`/`Pressable` for new UI unless the user explicitly asks otherwise.
+- Copy or extend components from `TeamGM/src/components/ui/` per Gluestack v3 patterns. Theme tokens live in `src/constants/theme.ts` and Gluestack provider config.
+- Use `@/` imports (`@` → `src/`). Assets use `@/assets/...`.
+
+```tsx
+// ❌ BAD
+import { Text, View, Pressable } from 'react-native';
+<Pressable style={{ padding: 16 }}><Text>Save</Text></Pressable>
+
+// ✅ GOOD
+import { Box, Button, ButtonText } from '@/components/ui/button';
+<Box className="px-4 py-2">
+  <Button><ButtonText>{LABELS.save}</ButtonText></Button>
+</Box>
+```
+
+## Logic: Evaluate Outside Conditionals
+
+Compute flags, derived values, and handlers **before** `return` or JSX branches. Avoid heavy logic inside `if`, ternaries, or inline JSX.
+
+```tsx
+// ❌ BAD
+{items.length > 0 && user?.isPremium ? <ScoresList items={items} /> : <EmptyState />}
+
+// ✅ GOOD
+const hasScores = items.length > 0;
+const canViewScores = hasScores && user?.isPremium;
+// ...
+return canViewScores ? <ScoresList items={items} /> : <EmptyState />;
+```
+
+## Text: Use Constants
+
+All user-facing copy shown in text components must be **named constants** (file-level or shared `constants/copy.ts`), not inline string literals in JSX.
+
+```tsx
+// ❌ BAD
+<Text>Scores</Text>
+
+// ✅ GOOD
+const LABELS = { scoresTitle: 'Scores' } as const;
+<Text>{LABELS.scoresTitle}</Text>
+```
+
+## Comments
+
+Add a **single-line** `//` comment on the line **immediately above**:
+
+- Every function (components, hooks, helpers)
+- Blocks of evaluation logic (derived state, memoized inputs, non-trivial assignments before render)
+
+Do not add noisy comments on obvious one-liners. Keep comments short and purposeful.
+
+```tsx
+// Builds tab bar height including safe area inset
+const tabBarHeight = TAB_BAR_CONTENT_HEIGHT + bottomInset;
+
+// Root tab navigator for the app shell
+export default function TabLayout() {
+```

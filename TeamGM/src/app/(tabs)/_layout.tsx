@@ -1,13 +1,21 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { useColorScheme } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors } from '@/constants/theme';
+import { AppBackground, Colors, TabBarBackground } from '@/constants/theme';
+
+const TAB_BAR_CONTENT_HEIGHT = 52;
+
+function TabBarBackgroundView() {
+  return <View style={[StyleSheet.absoluteFill, styles.tabBarBackground]} />;
+}
 
 export default function TabLayout() {
-  const scheme = useColorScheme();
-  const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
+  const colors = Colors.dark;
+  const insets = useSafeAreaInsets();
+  const bottomInset = insets.bottom;
 
   return (
     <Tabs
@@ -15,9 +23,29 @@ export default function TabLayout() {
         headerShown: false,
         tabBarActiveTintColor: colors.text,
         tabBarInactiveTintColor: colors.textSecondary,
+        tabBarBackground: TabBarBackgroundView,
+        sceneStyle: { backgroundColor: AppBackground },
+        tabBarItemStyle: {
+          height: TAB_BAR_CONTENT_HEIGHT,
+          justifyContent: 'center',
+          paddingVertical: 0,
+        },
+        tabBarIconStyle: {
+          marginTop: Platform.OS === 'ios' ? 2 : 0,
+        },
+        tabBarLabelStyle: {
+          marginTop: 2,
+          marginBottom: Platform.OS === 'ios' ? 0 : 2,
+        },
         tabBarStyle: {
-          backgroundColor: colors.background,
-          borderTopColor: colors.backgroundElement,
+          backgroundColor: TabBarBackground,
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderTopColor: AppBackground,
+          elevation: 0,
+          shadowOpacity: 0,
+          height: TAB_BAR_CONTENT_HEIGHT + bottomInset,
+          paddingTop: 6,
+          paddingBottom: bottomInset,
         },
       }}>
       <Tabs.Screen
@@ -53,3 +81,9 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBarBackground: {
+    backgroundColor: TabBarBackground,
+  },
+});
