@@ -3,11 +3,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Box } from '@/components/ui/box';
 import { TAB_BAR_CONTENT_HEIGHT } from '@/constants/tabs';
-import { AppBackground, Colors, TabBarBackground } from '@/constants/theme';
+import { AppBackground, Border, Colors } from '@/constants/theme';
 
 // Tab bar background layer (React Navigation tabBarBackground slot)
 function TabBarBackgroundLayer() {
-  return <Box className="absolute inset-0 bg-teamgm-tab-bar" />;
+  return <Box className="absolute inset-0 bg-teamgm-app" />;
 }
 
 // Screen options shared by every bottom tab (like tab navigator screenOptions)
@@ -38,9 +38,9 @@ export function useTabScreenOptions() {
       marginBottom: tabBarLabelMarginBottom,
     },
     tabBarStyle: {
-      backgroundColor: TabBarBackground,
+      backgroundColor: AppBackground,
       borderTopWidth: StyleSheet.hairlineWidth,
-      borderTopColor: AppBackground,
+      borderTopColor: Border,
       elevation: 0,
       shadowOpacity: 0,
       height: tabBarHeight,

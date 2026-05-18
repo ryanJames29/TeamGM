@@ -3,10 +3,18 @@ import React from 'react';
 import { ScreenHeader } from '@/components/screen-header';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { PROFILE_COPY } from '@/constants/copy';
-import { MAIN_TAB_OPTIONS } from '@/navigation/tab-options';
+import { ProfileTabIcon } from '@/navigation/tab-icons';
 
-export const options = MAIN_TAB_OPTIONS.profile;
+export const PROFILE_COPY = {
+  title: 'Profile',
+  subtitle: 'Your account and settings will live here.',
+} as const;
+
+export const options = {
+  title: PROFILE_COPY.title,
+  tabBarLabel: PROFILE_COPY.title,
+  tabBarIcon: ProfileTabIcon,
+};
 
 export default function ProfileScreen() {
   return (

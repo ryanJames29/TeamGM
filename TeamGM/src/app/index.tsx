@@ -8,8 +8,31 @@ import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { WebBadge } from '@/components/web-badge';
-import { HOME_COPY, TAB_COPY } from '@/constants/copy';
-import { MAIN_TAB_OPTIONS } from '@/navigation/tab-options';
+import { HomeTabIcon } from '@/navigation/tab-icons';
+
+export const HOME_COPY = {
+  title: 'Home',
+  welcomeTitle: 'Welcome to TeamGM',
+  getStarted: 'get started',
+  tryEditingTitle: 'Try editing',
+  tryEditingHint: 'src/app/index.tsx',
+  devToolsTitle: 'Dev tools',
+  freshStartTitle: 'Fresh start',
+  freshStartHint: 'npm run reset-project',
+  devMenuWeb: 'use browser devtools',
+  devMenuDeviceShake: 'shake device or press',
+  devMenuDeviceKey: 'm',
+  devMenuDeviceSuffix: 'in terminal',
+  devMenuSimulatorPrefix: 'press',
+  devMenuAndroidShortcut: 'cmd+m (or ctrl+m)',
+  devMenuIosShortcut: 'cmd+d',
+} as const;
+
+export const options = {
+  title: HOME_COPY.title,
+  tabBarLabel: HOME_COPY.title,
+  tabBarIcon: HomeTabIcon,
+};
 
 function getDevMenuHint() {
   const isWeb = Platform.OS === 'web';
@@ -27,8 +50,6 @@ function getDevMenuHint() {
   return isAndroid ? HOME_COPY.devMenuAndroidShortcut : HOME_COPY.devMenuIosShortcut;
 }
 
-export const options = MAIN_TAB_OPTIONS.index;
-
 export default function HomeScreen() {
   const devMenuHint = getDevMenuHint();
   const showWebBadge = Platform.OS === 'web';
@@ -36,7 +57,7 @@ export default function HomeScreen() {
 
   return (
     <VStack className="flex-1 bg-teamgm-app">
-      <ScreenHeader title={TAB_COPY.home.title} centered />
+      <ScreenHeader title={HOME_COPY.title} />
       <VStack className="flex-1 p-6">
         <VStack className="flex-1 items-center justify-center" space="lg">
           <AnimatedIcon />

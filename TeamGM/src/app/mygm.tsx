@@ -3,10 +3,18 @@ import React from 'react';
 import { ScreenHeader } from '@/components/screen-header';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { MYGM_COPY } from '@/constants/copy';
-import { MAIN_TAB_OPTIONS } from '@/navigation/tab-options';
+import { MyGMTabIcon } from '@/navigation/tab-icons';
 
-export const options = MAIN_TAB_OPTIONS.mygm;
+export const MYGM_COPY = {
+  title: 'myGM',
+  subtitle: 'Manage your roster and lineups here.',
+} as const;
+
+export const options = {
+  title: MYGM_COPY.title,
+  tabBarLabel: MYGM_COPY.title,
+  tabBarIcon: MyGMTabIcon,
+};
 
 export default function MyGMScreen() {
   return (

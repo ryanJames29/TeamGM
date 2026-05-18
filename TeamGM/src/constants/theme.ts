@@ -3,8 +3,14 @@ import '@/global.css';
 import { Platform } from 'react-native';
 
 import {
+  Accent,
+  AccentStrong,
+  Info,
   AppBackground,
   AppBackgroundRgb,
+  Border,
+  Secondary,
+  SecondaryRgb,
   Surface,
   SurfaceSelected,
   TabBarBackground,
@@ -15,8 +21,14 @@ import {
 } from '@/constants/colors';
 
 export {
+  Accent,
+  AccentStrong,
+  Info,
   AppBackground,
   AppBackgroundRgb,
+  Border,
+  Secondary,
+  SecondaryRgb,
   Surface,
   SurfaceSelected,
   TabBarBackground,
