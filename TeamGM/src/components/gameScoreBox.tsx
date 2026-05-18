@@ -47,6 +47,8 @@ function getGameScoreDisplay(game: MockGame) {
     homeTeamName: game.homeTeam.name,
     awayScoreLabel: formatScore(awayScore),
     homeScoreLabel: formatScore(homeScore),
+    awayRecordLabel: game.awayTeam.record,
+    homeRecordLabel: game.homeTeam.record,
     statusLabel: getStatusLabel(game),
     statusTextClass: getStatusTextClass(game.status),
   };
@@ -65,9 +67,14 @@ export function GameScoreBox({ game }: GameScoreBoxProps) {
             className="min-w-0 flex-1 text-teamgm-text-primary">
             {display.awayTeamName}
           </Text>
-          <Text bold={display.awayWins} className="shrink-0 text-teamgm-text-primary">
-            {display.awayScoreLabel}
-          </Text>
+          <HStack className="shrink-0 items-center gap-2">
+            <Text bold={display.awayWins} className="text-teamgm-text-primary">
+              {display.awayScoreLabel}
+            </Text>
+            <Text size="sm" className="text-teamgm-text-muted">
+              {display.awayRecordLabel}
+            </Text>
+          </HStack>
         </HStack>
         <HStack className="items-center justify-between gap-3">
           <Text
@@ -76,9 +83,14 @@ export function GameScoreBox({ game }: GameScoreBoxProps) {
             className="min-w-0 flex-1 text-teamgm-text-primary">
             {display.homeTeamName}
           </Text>
-          <Text bold={display.homeWins} className="shrink-0 text-teamgm-text-primary">
-            {display.homeScoreLabel}
-          </Text>
+          <HStack className="shrink-0 items-center gap-2">
+            <Text bold={display.homeWins} className="text-teamgm-text-primary">
+              {display.homeScoreLabel}
+            </Text>
+            <Text size="sm" className="text-teamgm-text-muted">
+              {display.homeRecordLabel}
+            </Text>
+          </HStack>
         </HStack>
         <Text size="sm" bold className={display.statusTextClass}>
           {display.statusLabel}

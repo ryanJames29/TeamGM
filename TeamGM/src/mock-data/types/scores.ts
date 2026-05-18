@@ -7,6 +7,7 @@ export type GameStatus = 'scheduled' | 'live' | 'final';
 export type MockTeamScore = {
   name: string;
   abbreviation: string;
+  record: string;
   score: number | null;
 };
 
@@ -22,3 +23,10 @@ export type MockGame = {
 };
 
 export type MockGamesByLeague = Record<MajorLeague, MockGame[]>;
+
+export type MockTeamScoreDraft = Omit<MockTeamScore, 'record'>;
+
+export type MockGameDraft = Omit<MockGame, 'awayTeam' | 'homeTeam'> & {
+  awayTeam: MockTeamScoreDraft;
+  homeTeam: MockTeamScoreDraft;
+};

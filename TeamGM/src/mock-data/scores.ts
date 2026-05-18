@@ -1,6 +1,28 @@
-import type { MockGame, MockGamesByLeague } from '@/mock-data/types/scores';
+import type { MockGame, MockGameDraft, MockGamesByLeague } from '@/mock-data/types/scores';
 
-const NFL_GAMES: MockGame[] = [
+function buildRecord(abbreviation: string, seed: string): string {
+  const value = [...seed, abbreviation].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  const wins = 4 + (value % 11);
+  const losses = 3 + ((value * 7) % 12);
+
+  return `${wins}-${losses}`;
+}
+
+function withRecords(games: MockGameDraft[]): MockGame[] {
+  return games.map((game) => ({
+    ...game,
+    awayTeam: {
+      ...game.awayTeam,
+      record: buildRecord(game.awayTeam.abbreviation, game.id),
+    },
+    homeTeam: {
+      ...game.homeTeam,
+      record: buildRecord(game.homeTeam.abbreviation, `${game.id}-home`),
+    },
+  }));
+}
+
+const NFL_GAMES: MockGameDraft[] = [
   {
     id: 'nfl-1',
     league: 'nfl',
@@ -103,7 +125,7 @@ const NFL_GAMES: MockGame[] = [
   },
 ];
 
-const NBA_GAMES: MockGame[] = [
+const NBA_GAMES: MockGameDraft[] = [
   {
     id: 'nba-1',
     league: 'nba',
@@ -206,7 +228,7 @@ const NBA_GAMES: MockGame[] = [
   },
 ];
 
-const MLB_GAMES: MockGame[] = [
+const MLB_GAMES: MockGameDraft[] = [
   {
     id: 'mlb-1',
     league: 'mlb',
@@ -309,7 +331,7 @@ const MLB_GAMES: MockGame[] = [
   },
 ];
 
-const NHL_GAMES: MockGame[] = [
+const NHL_GAMES: MockGameDraft[] = [
   {
     id: 'nhl-1',
     league: 'nhl',
@@ -412,18 +434,23 @@ const NHL_GAMES: MockGame[] = [
   },
 ];
 
+const NFL_GAMES_WITH_RECORDS = withRecords(NFL_GAMES);
+const NBA_GAMES_WITH_RECORDS = withRecords(NBA_GAMES);
+const MLB_GAMES_WITH_RECORDS = withRecords(MLB_GAMES);
+const NHL_GAMES_WITH_RECORDS = withRecords(NHL_GAMES);
+
 export const MOCK_SCORES_BY_LEAGUE: MockGamesByLeague = {
-  nfl: NFL_GAMES,
-  nba: NBA_GAMES,
-  mlb: MLB_GAMES,
-  nhl: NHL_GAMES,
+  nfl: NFL_GAMES_WITH_RECORDS,
+  nba: NBA_GAMES_WITH_RECORDS,
+  mlb: MLB_GAMES_WITH_RECORDS,
+  nhl: NHL_GAMES_WITH_RECORDS,
 };
 
 export const MOCK_SCORES_ALL: MockGame[] = [
-  ...NFL_GAMES,
-  ...NBA_GAMES,
-  ...MLB_GAMES,
-  ...NHL_GAMES,
+  ...NFL_GAMES_WITH_RECORDS,
+  ...NBA_GAMES_WITH_RECORDS,
+  ...MLB_GAMES_WITH_RECORDS,
+  ...NHL_GAMES_WITH_RECORDS,
 ];
 
 // Returns mock games for a single league
