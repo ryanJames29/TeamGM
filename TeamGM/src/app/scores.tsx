@@ -1,12 +1,21 @@
 import React from 'react';
 
+import { GameScoreBox } from '@/components/gameScoreBox';
 import { ScreenHeader } from '@/components/screen-header';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { SCORES_COPY } from '@/constants/copy';
-import { MAIN_TAB_OPTIONS } from '@/navigation/tab-options';
+import { ScoresTabIcon } from '@/navigation/tab-icons';
 
-export const options = MAIN_TAB_OPTIONS.scores;
+export const SCORES_COPY = {
+  title: 'Scores',
+  subtitle: 'Live scores and game results will appear here.',
+} as const;
+
+export const options = {
+  title: SCORES_COPY.title,
+  tabBarLabel: SCORES_COPY.title,
+  tabBarIcon: ScoresTabIcon,
+};
 
 export default function ScoresScreen() {
   return (
@@ -16,6 +25,7 @@ export default function ScoresScreen() {
         <Text size="md" className="text-teamgm-text-muted">
           {SCORES_COPY.subtitle}
         </Text>
+        <GameScoreBox />
       </VStack>
     </VStack>
   );

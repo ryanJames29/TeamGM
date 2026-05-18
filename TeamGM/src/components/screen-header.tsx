@@ -18,7 +18,7 @@ export function ScreenHeader({ title }: ScreenHeaderProps) {
   const displayTitle = formatTitle(title);
 
   return (
-    <Box className="bg-teamgm-tab-bar" style={{ paddingTop: top }}>
+    <Box className="bg-teamgm-secondary" style={{ paddingTop: top }}>
       <Box className="h-12 flex-row justify-center px-4">
         <Text size="lg" bold className="text-teamgm-text-primary">
           {displayTitle}

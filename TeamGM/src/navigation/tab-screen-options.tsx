@@ -7,7 +7,7 @@ import { AppBackground, Colors, TabBarBackground } from '@/constants/theme';
 
 // Tab bar background layer (React Navigation tabBarBackground slot)
 function TabBarBackgroundLayer() {
-  return <Box className="absolute inset-0 bg-teamgm-tab-bar" />;
+  return <Box className="absolute inset-0 bg-teamgm-secondary" />;
 }
 
 // Screen options shared by every bottom tab (like tab navigator screenOptions)

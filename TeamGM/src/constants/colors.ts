@@ -2,7 +2,7 @@ import brandColors from './brand-colors.js';
 
 export type TeamgmColors = {
   app: string;
-  'tab-bar': string;
+  secondary: string;
   surface: string;
   'surface-selected': string;
   'text-primary': string;
@@ -12,6 +12,8 @@ export type TeamgmColors = {
 export const teamgm = brandColors.teamgm as TeamgmColors;
 
 export const AppBackground = brandColors.appBackground;
+export const Secondary = brandColors.secondary;
+export const SecondaryRgb = brandColors.secondaryRgb;
 export const TabBarBackground = brandColors.tabBarBackground;
 export const Surface = brandColors.surface;
 export const SurfaceSelected = brandColors.surfaceSelected;

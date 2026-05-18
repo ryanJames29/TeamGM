@@ -7,7 +7,10 @@ import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import { AppBackground, Surface } from '@/constants/theme';
 import '@/global.css';
-import { MAIN_TAB_OPTIONS } from '@/navigation/tab-options';
+import { options as homeTabOptions } from '@/app/index';
+import { options as mygmTabOptions } from '@/app/mygm';
+import { options as profileTabOptions } from '@/app/profile';
+import { options as scoresTabOptions } from '@/app/scores';
 import { useTabScreenOptions } from '@/navigation/tab-screen-options';
 
 const navigationTheme = {
@@ -30,10 +33,10 @@ export default function RootLayout() {
         <StatusBar style="light" />
         <AnimatedSplashOverlay />
         <Tabs screenOptions={screenOptions}>
-          <Tabs.Screen name="index" options={MAIN_TAB_OPTIONS.index} />
-          <Tabs.Screen name="scores" options={MAIN_TAB_OPTIONS.scores} />
-          <Tabs.Screen name="mygm" options={MAIN_TAB_OPTIONS.mygm} />
-          <Tabs.Screen name="profile" options={MAIN_TAB_OPTIONS.profile} />
+          <Tabs.Screen name="index" options={homeTabOptions} />
+          <Tabs.Screen name="scores" options={scoresTabOptions} />
+          <Tabs.Screen name="mygm" options={mygmTabOptions} />
+          <Tabs.Screen name="profile" options={profileTabOptions} />
         </Tabs>
       </ThemeProvider>
     </GluestackUIProvider>
