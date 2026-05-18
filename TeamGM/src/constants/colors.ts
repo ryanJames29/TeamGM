@@ -10,6 +10,7 @@ export type TeamgmColors = {
   border: string;
   accent: string;
   'accent-strong': string;
+  info: string;
 };
 
 export const teamgm = brandColors.teamgm as TeamgmColors;
@@ -25,5 +26,6 @@ export const TextMuted = brandColors.textMuted;
 export const Border = brandColors.border;
 export const Accent = brandColors.accent;
 export const AccentStrong = brandColors.accentStrong;
+export const Info = brandColors.info;
 export const AppBackgroundRgb = brandColors.appBackgroundRgb;
 export const TabBarBackgroundRgb = brandColors.tabBarBackgroundRgb;

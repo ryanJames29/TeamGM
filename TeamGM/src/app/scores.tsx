@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { GameScoreBox } from '@/components/gameScoreBox';
 import { LeagueSelector } from '@/components/leagueSelector';
@@ -27,10 +27,10 @@ export default function ScoresScreen() {
   return (
     <VStack className="flex-1 bg-teamgm-app">
       <ScreenHeader title={SCORES_COPY.title} />
-      <VStack className="px-6 pt-4">
+      <View className="px-6 py-4">
         <LeagueSelector selectedLeague={selectedLeague} onSelect={setSelectedLeague} />
-      </VStack>
-      <ScrollView className="flex-1" contentContainerClassName="gap-3 p-6 pt-4">
+      </View>
+      <ScrollView className="flex-1" contentContainerClassName="gap-3 px-4">
         {games.map((game) => (
           <GameScoreBox key={game.id} game={game} />
         ))}

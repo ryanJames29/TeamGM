@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import {
   Accent,
   AccentStrong,
+  Info,
   AppBackground,
   AppBackgroundRgb,
   Border,
@@ -22,6 +23,7 @@ import {
 export {
   Accent,
   AccentStrong,
+  Info,
   AppBackground,
   AppBackgroundRgb,
   Border,

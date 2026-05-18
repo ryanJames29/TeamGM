@@ -15,6 +15,7 @@ const teamgm = {
   border: '#4a6d82',
   accent: flagRed,
   'accent-strong': moltenLava,
+  info: steelBlue,
 };
 
 module.exports = {
@@ -28,6 +29,7 @@ module.exports = {
   border: teamgm.border,
   accent: teamgm.accent,
   accentStrong: teamgm['accent-strong'],
+  info: teamgm.info,
   appBackgroundRgb: '0 24 36',
   secondaryRgb: '0 48 73',
   tabBarBackground: teamgm.secondary,

@@ -1,23 +1,17 @@
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import type { MockGame, MockTeamScore } from '@/mock-data/types/scores';
+import type { GameStatus, MockGame } from '@/mock-data/types/scores';
+import { HStack } from '@/components/ui/hstack';
 
 type GameScoreBoxProps = {
   game: MockGame;
 };
 
-type TeamRowProps = {
-  team: MockTeamScore;
-  isWinner: boolean;
-};
-
-// Renders a dash when score is not yet available
 function formatScore(score: number | null): string {
   return score === null ? '—' : String(score);
 }
 
-// Picks period text, final label, or scheduled start time for the footer
 function getStatusLabel(game: MockGame): string {
   if (game.periodLabel) {
     return game.periodLabel;
@@ -33,41 +27,55 @@ function getStatusLabel(game: MockGame): string {
   return game.status === 'live' ? 'Live' : 'Final';
 }
 
-// Single team abbreviation and score row
-function TeamRow({ team, isWinner }: TeamRowProps) {
-  return (
-    <Box className="flex-row items-center justify-between">
-      <Text bold={isWinner} className="text-teamgm-text-primary">
-        {team.abbreviation}
-      </Text>
-      <Text bold={isWinner} className="text-teamgm-text-primary">
-        {formatScore(team.score)}
-      </Text>
-    </Box>
-  );
+function getStatusTextClass(status: GameStatus): string {
+  if (status === 'scheduled') {
+    return 'text-teamgm-info';
+  }
+
+  return 'text-teamgm-accent';
 }
 
-// Score card for one game
-export function GameScoreBox({ game }: GameScoreBoxProps) {
+function getGameScoreDisplay(game: MockGame) {
   const awayScore = game.awayTeam.score;
   const homeScore = game.homeTeam.score;
   const hasScores = awayScore !== null && homeScore !== null;
-  const awayWins = hasScores && awayScore > homeScore;
-  const homeWins = hasScores && homeScore > awayScore;
-  const statusIsLive = game.status === 'live';
+
+  return {
+    awayWins: hasScores && awayScore > homeScore,
+    homeWins: hasScores && homeScore > awayScore,
+    awayAbbreviation: game.awayTeam.abbreviation,
+    homeAbbreviation: game.homeTeam.abbreviation,
+    awayScoreLabel: formatScore(awayScore),
+    homeScoreLabel: formatScore(homeScore),
+    statusLabel: getStatusLabel(game),
+    statusTextClass: getStatusTextClass(game.status),
+  };
+}
+
+export function GameScoreBox({ game }: GameScoreBoxProps) {
+  const display = getGameScoreDisplay(game);
 
   return (
     <Box className="rounded-lg border border-teamgm-border bg-teamgm-surface p-4">
       <VStack space="sm">
-        <Text size="xs" className="uppercase text-teamgm-text-muted">
-          {game.league}
-        </Text>
-        <TeamRow team={game.awayTeam} isWinner={awayWins} />
-        <TeamRow team={game.homeTeam} isWinner={homeWins} />
-        <Text
-          size="xs"
-          className={statusIsLive ? 'text-teamgm-accent' : 'text-teamgm-text-muted'}>
-          {getStatusLabel(game)}
+        <HStack className="items-center justify-between">
+          <Text bold={display.awayWins} className="text-teamgm-text-primary">
+            {display.awayAbbreviation}
+          </Text>
+          <Text bold={display.awayWins} className="text-teamgm-text-primary">
+            {display.awayScoreLabel}
+          </Text>
+        </HStack>
+        <HStack className="items-center justify-between">
+          <Text bold={display.homeWins} className="text-teamgm-text-primary">
+            {display.homeAbbreviation}
+          </Text>
+          <Text bold={display.homeWins} className="text-teamgm-text-primary">
+            {display.homeScoreLabel}
+          </Text>
+        </HStack>
+        <Text size="sm" bold className={display.statusTextClass}>
+          {display.statusLabel}
         </Text>
       </VStack>
     </Box>
