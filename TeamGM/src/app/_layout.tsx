@@ -5,7 +5,7 @@ import React from 'react';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
-import { AppBackground, Surface } from '@/constants/theme';
+import { AppBackground, Border } from '@/constants/theme';
 import '@/global.css';
 import { options as homeTabOptions } from '@/app/index';
 import { options as mygmTabOptions } from '@/app/mygm';
@@ -19,7 +19,7 @@ const navigationTheme = {
     ...DarkTheme.colors,
     background: AppBackground,
     card: AppBackground,
-    border: Surface,
+    border: Border,
   },
 };
 

@@ -3,12 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --teamgm-app: #171a21;
-  --teamgm-secondary: #1b2838;
-  --teamgm-surface: #21262e;
-  --teamgm-surface-selected: #2c333f;
-  --teamgm-text-primary: #ffffff;
-  --teamgm-text-muted: #9ca3af;
+  --teamgm-app: #001824;
+  --teamgm-secondary: #003049;
+  --teamgm-surface: #0f2838;
+  --teamgm-surface-selected: #c1121f;
+  --teamgm-text-primary: #fdf0d5;
+  --teamgm-text-muted: #a4c1d4;
+  --teamgm-border: #4a6d82;
+  --teamgm-accent: #c1121f;
+  --teamgm-accent-strong: #780000;
   --font-display:
     Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
     Segoe UI Symbol, Noto Color Emoji;
