@@ -1,4 +1,5 @@
-import { API_BASE_URL, API_HEALTH_PATH } from '@/constants/api';
+import { API_BASE_URL, API_HEALTH_PATH, API_NHL_GAMES_PATH } from '@/constants/api';
+import type { MockGame } from '@/mock-data/types/scores';
 
 export type ApiHealthResponse = {
   status: string;
@@ -43,4 +44,46 @@ export async function fetchApiHealth(): Promise<ApiHealthResponse> {
   }
 
   return (await response.json()) as ApiHealthResponse;
+}
+
+export type NhlLeagueInfo = {
+  id?: number;
+  name?: string;
+  logo?: string;
+  season?: number;
+};
+
+export type NhlScoresResponse = {
+  status: string;
+  message: string;
+  date?: string;
+  league?: NhlLeagueInfo;
+  games: MockGame[];
+};
+
+export async function fetchNhlScores(centerDate?: string): Promise<NhlScoresResponse> {
+  const query = centerDate ? `?date=${encodeURIComponent(centerDate)}` : '';
+  const url = `${getApiBaseUrl()}${API_NHL_GAMES_PATH}${query}`;
+  let response: Response;
+
+  try {
+    response = await fetch(url);
+  } catch {
+    throw new ApiClientError(
+      'Could not reach the API. Start uvicorn and try again.',
+    );
+  }
+
+  if (!response.ok) {
+    let detail = `API returned ${response.status}`;
+    try {
+      const body = (await response.json()) as { detail?: string };
+      if (body.detail) detail = body.detail;
+    } catch {
+      // ignore parse errors
+    }
+    throw new ApiClientError(detail, response.status);
+  }
+
+  return (await response.json()) as NhlScoresResponse;
 }
