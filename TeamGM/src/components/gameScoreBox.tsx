@@ -43,8 +43,8 @@ function getGameScoreDisplay(game: MockGame) {
   return {
     awayWins: hasScores && awayScore > homeScore,
     homeWins: hasScores && homeScore > awayScore,
-    awayAbbreviation: game.awayTeam.abbreviation,
-    homeAbbreviation: game.homeTeam.abbreviation,
+    awayTeamName: game.awayTeam.name,
+    homeTeamName: game.homeTeam.name,
     awayScoreLabel: formatScore(awayScore),
     homeScoreLabel: formatScore(homeScore),
     statusLabel: getStatusLabel(game),
@@ -58,19 +58,25 @@ export function GameScoreBox({ game }: GameScoreBoxProps) {
   return (
     <Box className="rounded-lg border border-teamgm-border bg-teamgm-surface p-4">
       <VStack space="sm">
-        <HStack className="items-center justify-between">
-          <Text bold={display.awayWins} className="text-teamgm-text-primary">
-            {display.awayAbbreviation}
+        <HStack className="items-center justify-between gap-3">
+          <Text
+            bold={display.awayWins}
+            isTruncated
+            className="min-w-0 flex-1 text-teamgm-text-primary">
+            {display.awayTeamName}
           </Text>
-          <Text bold={display.awayWins} className="text-teamgm-text-primary">
+          <Text bold={display.awayWins} className="shrink-0 text-teamgm-text-primary">
             {display.awayScoreLabel}
           </Text>
         </HStack>
-        <HStack className="items-center justify-between">
-          <Text bold={display.homeWins} className="text-teamgm-text-primary">
-            {display.homeAbbreviation}
+        <HStack className="items-center justify-between gap-3">
+          <Text
+            bold={display.homeWins}
+            isTruncated
+            className="min-w-0 flex-1 text-teamgm-text-primary">
+            {display.homeTeamName}
           </Text>
-          <Text bold={display.homeWins} className="text-teamgm-text-primary">
+          <Text bold={display.homeWins} className="shrink-0 text-teamgm-text-primary">
             {display.homeScoreLabel}
           </Text>
         </HStack>

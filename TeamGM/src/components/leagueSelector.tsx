@@ -5,10 +5,10 @@ import { Button, ButtonText } from '@/components/ui/button';
 import { MAJOR_LEAGUES, type MajorLeague } from '@/mock-data/types/scores';
 
 const LEAGUE_LABELS: Record<MajorLeague, string> = {
-  nfl: 'NFL',
-  nba: 'NBA',
-  mlb: 'MLB',
-  nhl: 'NHL',
+  nfl: '🏈 NFL',
+  nba: '🏀 NBA',
+  mlb: '⚾️ MLB',
+  nhl: '🏒 NHL',
 };
 
 type LeagueSelectorProps = {
@@ -19,14 +19,14 @@ type LeagueSelectorProps = {
 // Horizontal league filter for the scores screen
 export function LeagueSelector({ selectedLeague, onSelect }: LeagueSelectorProps) {
   return (
-    <Box className="flex-row flex-wrap gap-2">
+    <Box className="flex-row flex-wrap gap-3 justify-center">
       {MAJOR_LEAGUES.map((league) => {
         const isSelected = league === selectedLeague;
 
         return (
           <Button
             key={league}
-            size="sm"
+            size="md"
             action="secondary"
             variant="solid"
             onPress={() => onSelect(league)}

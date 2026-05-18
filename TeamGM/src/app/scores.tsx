@@ -27,7 +27,7 @@ export default function ScoresScreen() {
   return (
     <VStack className="flex-1 bg-teamgm-app">
       <ScreenHeader title={SCORES_COPY.title} />
-      <View className="px-6 py-4">
+      <View className="py-4">
         <LeagueSelector selectedLeague={selectedLeague} onSelect={setSelectedLeague} />
       </View>
       <ScrollView className="flex-1" contentContainerClassName="gap-3 px-4">
