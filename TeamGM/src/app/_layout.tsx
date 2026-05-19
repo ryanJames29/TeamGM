@@ -5,6 +5,7 @@ import React from 'react';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
+import { StoreProvider } from '@/store/provider';
 import { AppBackground, Border } from '@/constants/theme';
 import '@/global.css';
 import { options as homeTabOptions } from '@/app/index';
@@ -23,22 +24,23 @@ const navigationTheme = {
   },
 };
 
-// Root layout: providers + bottom tabs (Expo Router must render <Tabs> here)
 export default function RootLayout() {
   const screenOptions = useTabScreenOptions();
 
   return (
     <GluestackUIProvider mode="dark">
-      <ThemeProvider value={navigationTheme}>
-        <StatusBar style="light" />
-        <AnimatedSplashOverlay />
-        <Tabs screenOptions={screenOptions}>
-          <Tabs.Screen name="index" options={homeTabOptions} />
-          <Tabs.Screen name="scores" options={scoresTabOptions} />
-          <Tabs.Screen name="mygm" options={mygmTabOptions} />
-          <Tabs.Screen name="profile" options={profileTabOptions} />
-        </Tabs>
-      </ThemeProvider>
+      <StoreProvider>
+        <ThemeProvider value={navigationTheme}>
+          <StatusBar style="light" />
+          <AnimatedSplashOverlay />
+          <Tabs screenOptions={screenOptions}>
+            <Tabs.Screen name="index" options={homeTabOptions} />
+            <Tabs.Screen name="scores" options={scoresTabOptions} />
+            <Tabs.Screen name="mygm" options={mygmTabOptions} />
+            <Tabs.Screen name="profile" options={profileTabOptions} />
+          </Tabs>
+        </ThemeProvider>
+      </StoreProvider>
     </GluestackUIProvider>
   );
 }
