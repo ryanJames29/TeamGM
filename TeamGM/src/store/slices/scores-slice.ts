@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import type { MajorLeague } from '@/mock-data/types/scores';
+import type { RootState } from '@/store/store';
 
 type ScoresState = {
   selectedLeague: MajorLeague;
@@ -23,5 +24,4 @@ const scoresSlice = createSlice({
 export const { setSelectedLeague } = scoresSlice.actions;
 export const scoresReducer = scoresSlice.reducer;
 
-export const selectSelectedLeague = (state: { scores: ScoresState }) =>
-  state.scores.selectedLeague;
+export const selectSelectedLeague = (state: RootState) => state.scores.selectedLeague;
