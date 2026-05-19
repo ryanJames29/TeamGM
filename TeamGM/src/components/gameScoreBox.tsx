@@ -12,8 +12,36 @@ function formatScore(score: number | null): string {
   return score === null ? '—' : String(score);
 }
 
+/** NHL live clock: "12:34 - 3rd". Also normalizes legacy mock "3rd 12:34". */
+function formatHockeyPeriodLabel(periodLabel: string): string {
+  const trimmed = periodLabel.trim();
+  if (trimmed === 'Final' || trimmed === 'Cancelled') {
+    return trimmed;
+  }
+
+  if (/^\d{1,2}:\d{2}\s*-\s*(1st|2nd|3rd|OT|SO)$/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  const legacy = trimmed.match(/^((?:\d{1,2}(?:st|nd|rd|th))|OT|SO)\s+(\d{1,2}:\d{2})$/i);
+  if (legacy) {
+    return `${legacy[2]} - ${legacy[1]}`;
+  }
+
+  const periodOnly = trimmed.match(/^(First|Second|Third)\s+Period$/i);
+  if (periodOnly) {
+    const map: Record<string, string> = { first: '1st', second: '2nd', third: '3rd' };
+    return map[periodOnly[1].toLowerCase()] ?? trimmed;
+  }
+
+  return trimmed;
+}
+
 function getStatusLabel(game: MockGame): string {
   if (game.periodLabel) {
+    if (game.league === 'nhl') {
+      return formatHockeyPeriodLabel(game.periodLabel);
+    }
     return game.periodLabel;
   }
 

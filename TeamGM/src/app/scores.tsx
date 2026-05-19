@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, View } from 'react-native';
 
 import { GameScoreBox } from '@/components/gameScoreBox';
@@ -14,6 +14,7 @@ import { getRtkErrorMessage } from '@/store/api/get-rtk-error-message';
 import { teamgmApi, useGetNhlGamesQuery } from '@/store/api/teamgm-api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectSelectedLeague, setSelectedLeague } from '@/store/slices/scores-slice';
+import { sortScoreboardGames } from '@/utils/sort-scoreboard-games';
 
 export const SCORES_COPY = {
   title: 'Scores',
@@ -32,7 +33,8 @@ export const options = {
   tabBarIcon: ScoresTabIcon,
 };
 
-const NHL_POLL_INTERVAL_MS = 30_000;
+// Backend refreshes NHL scores every 60s via Redis jobs — match that cadence.
+const NHL_POLL_INTERVAL_MS = 60_000;
 
 export default function ScoresScreen() {
   const dispatch = useAppDispatch();
@@ -56,7 +58,10 @@ export default function ScoresScreen() {
     pollingInterval: hasLiveNhlGames ? NHL_POLL_INTERVAL_MS : 0,
   });
 
-  const games = isNhl ? (nhlData?.games ?? []) : getMockScoresByLeague(selectedLeague);
+  const games = useMemo(() => {
+    const list = isNhl ? (nhlData?.games ?? []) : getMockScoresByLeague(selectedLeague);
+    return sortScoreboardGames(list);
+  }, [isNhl, nhlData?.games, selectedLeague]);
 
   const showInitialLoader = isNhl && isNhlLoading && games.length === 0;
   const nhlErrorMessage = !canReachApi
