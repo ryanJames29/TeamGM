@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, View } from 'react-native';
 
 import { GameScoreBox } from '@/components/gameScoreBox';
@@ -21,7 +21,6 @@ export const SCORES_COPY = {
   title: 'Scores',
   subtitle: 'Live scores and game results will appear here.',
   loadingNhl: 'Loading NHL scores…',
-  refreshingNhl: 'Updating…',
   emptyNhl: 'No NHL games on today’s scoreboard.',
   nhlApiMissing:
     'Set EXPO_PUBLIC_API_URL in .env (e.g. http://127.0.0.1:8000) and restart Expo.',
@@ -48,11 +47,12 @@ export default function ScoresScreen() {
   const hasLiveNhlGames =
     cachedNhl.data?.games.some((game) => game.status === 'live') ?? false;
 
+  const [isPullRefreshing, setIsPullRefreshing] = useState(false);
+
   const {
     data: nhlData,
     error: nhlError,
     isLoading: isNhlLoading,
-    isFetching: isNhlFetching,
     refetch: refetchNhl,
   } = useGetNhlGamesQuery(undefined, {
     skip: !isNhl || !canReachApi,
@@ -70,6 +70,11 @@ export default function ScoresScreen() {
     : nhlError
       ? getRtkErrorMessage(nhlError, SCORES_COPY.nhlFetchError)
       : null;
+
+  const onNhlPullRefresh = useCallback(() => {
+    setIsPullRefreshing(true);
+    void refetchNhl().finally(() => setIsPullRefreshing(false));
+  }, [refetchNhl]);
 
   return (
     <VStack className="flex-1 bg-teamgm-app">
@@ -95,18 +100,12 @@ export default function ScoresScreen() {
           refreshControl={
             isNhl ? (
               <RefreshControl
-                refreshing={isNhlFetching && !isNhlLoading}
-                onRefresh={() => void refetchNhl()}
+                refreshing={isPullRefreshing}
+                onRefresh={onNhlPullRefresh}
                 tintColor={Accent}
               />
             ) : undefined
           }>
-          {isNhl && isNhlFetching && games.length > 0 ? (
-            <Text size="xs" className="text-center text-teamgm-text-muted">
-              {SCORES_COPY.refreshingNhl}
-            </Text>
-          ) : null}
-
           {isNhl && nhlErrorMessage ? (
             <Text size="sm" className="text-teamgm-accent">
               {nhlErrorMessage}
