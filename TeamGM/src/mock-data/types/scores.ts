@@ -8,6 +8,8 @@ export type MockTeamScore = {
   name: string;
   abbreviation: string;
   record: string;
+  /** Division/conference standing, e.g. "3rd Atl" (NHL from API). */
+  standing?: string | null;
   score: number | null;
 };
 

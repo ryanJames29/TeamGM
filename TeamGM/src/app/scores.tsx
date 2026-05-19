@@ -14,6 +14,7 @@ import { getRtkErrorMessage } from '@/store/api/get-rtk-error-message';
 import { teamgmApi, useGetNhlGamesQuery } from '@/store/api/teamgm-api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectSelectedLeague, setSelectedLeague } from '@/store/slices/scores-slice';
+import { filterScoreboardGames } from '@/utils/filter-scoreboard-games';
 import { sortScoreboardGames } from '@/utils/sort-scoreboard-games';
 
 export const SCORES_COPY = {
@@ -21,7 +22,7 @@ export const SCORES_COPY = {
   subtitle: 'Live scores and game results will appear here.',
   loadingNhl: 'Loading NHL scores…',
   refreshingNhl: 'Updating…',
-  emptyNhl: 'No NHL games in the last week.',
+  emptyNhl: 'No NHL games on today’s scoreboard.',
   nhlApiMissing:
     'Set EXPO_PUBLIC_API_URL in .env (e.g. http://127.0.0.1:8000) and restart Expo.',
   nhlFetchError: 'Could not load NHL scores.',
@@ -60,7 +61,7 @@ export default function ScoresScreen() {
 
   const games = useMemo(() => {
     const list = isNhl ? (nhlData?.games ?? []) : getMockScoresByLeague(selectedLeague);
-    return sortScoreboardGames(list);
+    return sortScoreboardGames(filterScoreboardGames(list));
   }, [isNhl, nhlData?.games, selectedLeague]);
 
   const showInitialLoader = isNhl && isNhlLoading && games.length === 0;

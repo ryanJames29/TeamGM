@@ -12,11 +12,23 @@ function formatScore(score: number | null): string {
   return score === null ? '—' : String(score);
 }
 
+function formatNhlTeamMeta(team: MockGame['awayTeam']): string {
+  const { record, standing } = team;
+  if (record && record !== '—' && standing) {
+    return `${record} · ${standing}`;
+  }
+  return record || '—';
+}
+
 /** NHL live clock: "12:34 - 3rd". Also normalizes legacy mock "3rd 12:34". */
 function formatHockeyPeriodLabel(periodLabel: string): string {
   const trimmed = periodLabel.trim();
   if (trimmed === 'Final' || trimmed === 'Cancelled') {
     return trimmed;
+  }
+
+  if (trimmed === 'Intermission' || /break\s*time/i.test(trimmed)) {
+    return 'Intermission';
   }
 
   if (/^\d{1,2}:\d{2}\s*-\s*(1st|2nd|3rd|OT|SO)$/i.test(trimmed)) {
@@ -75,11 +87,43 @@ function getGameScoreDisplay(game: MockGame) {
     homeTeamName: game.homeTeam.name,
     awayScoreLabel: formatScore(awayScore),
     homeScoreLabel: formatScore(homeScore),
-    awayRecordLabel: game.awayTeam.record,
-    homeRecordLabel: game.homeTeam.record,
+    awayRecordLabel:
+      game.league === 'nhl' ? formatNhlTeamMeta(game.awayTeam) : game.awayTeam.record,
+    homeRecordLabel:
+      game.league === 'nhl' ? formatNhlTeamMeta(game.homeTeam) : game.homeTeam.record,
     statusLabel: getStatusLabel(game),
     statusTextClass: getStatusTextClass(game.status),
   };
+}
+
+type TeamScoreRowProps = {
+  teamName: string;
+  scoreLabel: string;
+  recordLabel: string;
+  isWinner: boolean;
+};
+
+function TeamScoreRow({ teamName, scoreLabel, recordLabel, isWinner }: TeamScoreRowProps) {
+  return (
+    <HStack className="items-start gap-3">
+      <Text
+        bold={isWinner}
+        isTruncated
+        className="min-w-0 flex-1 self-start text-teamgm-text-primary">
+        {teamName}
+      </Text>
+      <Text
+        bold={isWinner}
+        className="w-8 shrink-0 self-start text-right tabular-nums text-teamgm-text-primary">
+        {scoreLabel}
+      </Text>
+      <Text
+        size="sm"
+        className="w-[108px] shrink-0 self-start text-right leading-5 text-teamgm-text-muted">
+        {recordLabel}
+      </Text>
+    </HStack>
+  );
 }
 
 export function GameScoreBox({ game }: GameScoreBoxProps) {
@@ -87,40 +131,20 @@ export function GameScoreBox({ game }: GameScoreBoxProps) {
 
   return (
     <Box className="rounded-lg border border-teamgm-border bg-teamgm-surface p-4">
-      <VStack space="sm">
-        <HStack className="items-center justify-between gap-3">
-          <Text
-            bold={display.awayWins}
-            isTruncated
-            className="min-w-0 flex-1 text-teamgm-text-primary">
-            {display.awayTeamName}
-          </Text>
-          <HStack className="shrink-0 items-center gap-2">
-            <Text bold={display.awayWins} className="text-teamgm-text-primary">
-              {display.awayScoreLabel}
-            </Text>
-            <Text size="sm" className="text-teamgm-text-muted">
-              {display.awayRecordLabel}
-            </Text>
-          </HStack>
-        </HStack>
-        <HStack className="items-center justify-between gap-3">
-          <Text
-            bold={display.homeWins}
-            isTruncated
-            className="min-w-0 flex-1 text-teamgm-text-primary">
-            {display.homeTeamName}
-          </Text>
-          <HStack className="shrink-0 items-center gap-2">
-            <Text bold={display.homeWins} className="text-teamgm-text-primary">
-              {display.homeScoreLabel}
-            </Text>
-            <Text size="sm" className="text-teamgm-text-muted">
-              {display.homeRecordLabel}
-            </Text>
-          </HStack>
-        </HStack>
-        <Text size="sm" bold className={display.statusTextClass}>
+      <VStack space="sm" className="items-stretch">
+        <TeamScoreRow
+          teamName={display.awayTeamName}
+          scoreLabel={display.awayScoreLabel}
+          recordLabel={display.awayRecordLabel}
+          isWinner={display.awayWins}
+        />
+        <TeamScoreRow
+          teamName={display.homeTeamName}
+          scoreLabel={display.homeScoreLabel}
+          recordLabel={display.homeRecordLabel}
+          isWinner={display.homeWins}
+        />
+        <Text size="sm" bold className={`self-start ${display.statusTextClass}`}>
           {display.statusLabel}
         </Text>
       </VStack>
