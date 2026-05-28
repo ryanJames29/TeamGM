@@ -8,6 +8,10 @@ export function getRtkErrorMessage(error: unknown, fallback: string): string {
     return 'Could not reach the API. Is uvicorn running?';
   }
 
+  if ('status' in error && error.status === 'PARSING_ERROR') {
+    return 'API returned an invalid response. Check that Redis is running (docker compose up -d).';
+  }
+
   if ('data' in error && error.data && typeof error.data === 'object') {
     const data = error.data as { detail?: unknown };
     if (typeof data.detail === 'string' && data.detail.trim()) {
