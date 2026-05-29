@@ -12,7 +12,7 @@ function formatScore(score: number | null): string {
   return score === null ? '—' : String(score);
 }
 
-function formatNhlTeamMeta(team: MockGame['awayTeam']): string {
+function formatTeamMeta(team: MockGame['awayTeam']): string {
   const { record, standing } = team;
   if (record && record !== '—' && standing) {
     return `${record} · ${standing}`;
@@ -88,9 +88,13 @@ function getGameScoreDisplay(game: MockGame) {
     awayScoreLabel: formatScore(awayScore),
     homeScoreLabel: formatScore(homeScore),
     awayRecordLabel:
-      game.league === 'nhl' ? formatNhlTeamMeta(game.awayTeam) : game.awayTeam.record,
+      game.league === 'nhl' || game.league === 'mlb'
+        ? formatTeamMeta(game.awayTeam)
+        : game.awayTeam.record,
     homeRecordLabel:
-      game.league === 'nhl' ? formatNhlTeamMeta(game.homeTeam) : game.homeTeam.record,
+      game.league === 'nhl' || game.league === 'mlb'
+        ? formatTeamMeta(game.homeTeam)
+        : game.homeTeam.record,
     statusLabel: getStatusLabel(game),
     statusTextClass: getStatusTextClass(game.status),
   };
