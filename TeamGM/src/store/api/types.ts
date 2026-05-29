@@ -1,6 +1,6 @@
 import type { MockGame } from '@/mock-data/types/scores';
 
-export type NhlScoresResponse = {
+export type LeagueScoresResponse = {
   status: string;
   message: string;
   date?: string;
@@ -12,3 +12,6 @@ export type NhlScoresResponse = {
   };
   games: MockGame[];
 };
+
+export type NhlScoresResponse = LeagueScoresResponse;
+export type MlbScoresResponse = LeagueScoresResponse;

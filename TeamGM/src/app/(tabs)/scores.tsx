@@ -9,9 +9,10 @@ import { VStack } from '@/components/ui/vstack';
 import { API_BASE_URL } from '@/constants/api';
 import { Accent } from '@/constants/theme';
 import { getMockScoresByLeague } from '@/mock-data';
+import type { MajorLeague } from '@/mock-data/types/scores';
 import { ScoresTabIcon } from '@/navigation/tab-icons';
 import { getRtkErrorMessage } from '@/store/api/get-rtk-error-message';
-import { teamgmApi, useGetNhlGamesQuery } from '@/store/api/teamgm-api';
+import { teamgmApi, useGetMlbGamesQuery, useGetNhlGamesQuery } from '@/store/api/teamgm-api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectSelectedLeague, setSelectedLeague } from '@/store/slices/scores-slice';
 import { filterScoreboardGames } from '@/utils/filter-scoreboard-games';
@@ -21,10 +22,13 @@ export const SCORES_COPY = {
   title: 'Scores',
   subtitle: 'Live scores and game results will appear here.',
   loadingNhl: 'Loading NHL scores…',
+  loadingMlb: 'Loading MLB scores…',
   emptyNhl: 'No NHL games on today’s scoreboard.',
-  nhlApiMissing:
+  emptyMlb: 'No MLB games on today’s scoreboard.',
+  apiMissing:
     'Set EXPO_PUBLIC_API_URL in .env (e.g. http://127.0.0.1:8000) and restart Expo.',
   nhlFetchError: 'Could not load NHL scores.',
+  mlbFetchError: 'Could not load MLB scores.',
 } as const;
 
 export const options = {
@@ -33,19 +37,32 @@ export const options = {
   tabBarIcon: ScoresTabIcon,
 };
 
-// Backend refreshes NHL scores every 60s via Redis jobs — match that cadence.
-const NHL_POLL_INTERVAL_MS = 60_000;
+const LIVE_LEAGUES = ['nhl', 'mlb'] as const satisfies readonly MajorLeague[];
+
+type LiveLeague = (typeof LIVE_LEAGUES)[number];
+
+// Backend refreshes live scores every 60s via Redis jobs — match that cadence.
+const LIVE_POLL_INTERVAL_MS = 60_000;
+
+function isLiveLeague(league: MajorLeague): league is LiveLeague {
+  return LIVE_LEAGUES.includes(league as LiveLeague);
+}
 
 export default function ScoresScreen() {
   const dispatch = useAppDispatch();
   const selectedLeague = useAppSelector(selectSelectedLeague);
   const isNhl = selectedLeague === 'nhl';
+  const isMlb = selectedLeague === 'mlb';
+  const usesLiveApi = isLiveLeague(selectedLeague);
   const canReachApi = Boolean(API_BASE_URL);
 
   const selectNhlGames = teamgmApi.endpoints.getNhlGames.select();
+  const selectMlbGames = teamgmApi.endpoints.getMlbGames.select();
   const cachedNhl = useAppSelector(selectNhlGames);
-  const hasLiveNhlGames =
-    cachedNhl.data?.games.some((game) => game.status === 'live') ?? false;
+  const cachedMlb = useAppSelector(selectMlbGames);
+  const hasLiveGames =
+    (isNhl && cachedNhl.data?.games.some((game) => game.status === 'live')) ||
+    (isMlb && cachedMlb.data?.games.some((game) => game.status === 'live'));
 
   const [isPullRefreshing, setIsPullRefreshing] = useState(false);
 
@@ -56,25 +73,44 @@ export default function ScoresScreen() {
     refetch: refetchNhl,
   } = useGetNhlGamesQuery(undefined, {
     skip: !isNhl || !canReachApi,
-    pollingInterval: hasLiveNhlGames ? NHL_POLL_INTERVAL_MS : 0,
+    pollingInterval: isNhl && hasLiveGames ? LIVE_POLL_INTERVAL_MS : 0,
   });
 
-  const games = useMemo(() => {
-    const list = isNhl ? (nhlData?.games ?? []) : getMockScoresByLeague(selectedLeague);
-    return sortScoreboardGames(filterScoreboardGames(list));
-  }, [isNhl, nhlData?.games, selectedLeague]);
+  const {
+    data: mlbData,
+    error: mlbError,
+    isLoading: isMlbLoading,
+    refetch: refetchMlb,
+  } = useGetMlbGamesQuery(undefined, {
+    skip: !isMlb || !canReachApi,
+    pollingInterval: isMlb && hasLiveGames ? LIVE_POLL_INTERVAL_MS : 0,
+  });
 
-  const showInitialLoader = isNhl && isNhlLoading && games.length === 0;
-  const nhlErrorMessage = !canReachApi
-    ? SCORES_COPY.nhlApiMissing
-    : nhlError
-      ? getRtkErrorMessage(nhlError, SCORES_COPY.nhlFetchError)
+  const liveData = isNhl ? nhlData : isMlb ? mlbData : undefined;
+  const liveError = isNhl ? nhlError : isMlb ? mlbError : undefined;
+  const isLiveLoading = isNhl ? isNhlLoading : isMlb ? isMlbLoading : false;
+  const refetchLive = isNhl ? refetchNhl : refetchMlb;
+
+  const games = useMemo(() => {
+    const list = usesLiveApi ? (liveData?.games ?? []) : getMockScoresByLeague(selectedLeague);
+    return sortScoreboardGames(filterScoreboardGames(list));
+  }, [usesLiveApi, liveData?.games, selectedLeague]);
+
+  const loadingCopy = isNhl ? SCORES_COPY.loadingNhl : SCORES_COPY.loadingMlb;
+  const emptyCopy = isNhl ? SCORES_COPY.emptyNhl : SCORES_COPY.emptyMlb;
+  const fetchErrorCopy = isNhl ? SCORES_COPY.nhlFetchError : SCORES_COPY.mlbFetchError;
+
+  const showInitialLoader = usesLiveApi && isLiveLoading && games.length === 0;
+  const liveErrorMessage = !canReachApi
+    ? SCORES_COPY.apiMissing
+    : liveError
+      ? getRtkErrorMessage(liveError, fetchErrorCopy)
       : null;
 
-  const onNhlPullRefresh = useCallback(() => {
+  const onLivePullRefresh = useCallback(() => {
     setIsPullRefreshing(true);
-    void refetchNhl().finally(() => setIsPullRefreshing(false));
-  }, [refetchNhl]);
+    void refetchLive().finally(() => setIsPullRefreshing(false));
+  }, [refetchLive]);
 
   return (
     <VStack className="flex-1 bg-teamgm-app">
@@ -90,7 +126,7 @@ export default function ScoresScreen() {
         <VStack className="flex-1 items-center justify-center gap-3 px-4">
           <ActivityIndicator color={Accent} />
           <Text size="sm" className="text-teamgm-text-muted">
-            {SCORES_COPY.loadingNhl}
+            {loadingCopy}
           </Text>
         </VStack>
       ) : (
@@ -98,23 +134,23 @@ export default function ScoresScreen() {
           className="flex-1 bg-teamgm-app"
           contentContainerClassName="gap-3 px-4 pb-6"
           refreshControl={
-            isNhl ? (
+            usesLiveApi ? (
               <RefreshControl
                 refreshing={isPullRefreshing}
-                onRefresh={onNhlPullRefresh}
+                onRefresh={onLivePullRefresh}
                 tintColor={Accent}
               />
             ) : undefined
           }>
-          {isNhl && nhlErrorMessage ? (
+          {usesLiveApi && liveErrorMessage ? (
             <Text size="sm" className="text-teamgm-accent">
-              {nhlErrorMessage}
+              {liveErrorMessage}
             </Text>
           ) : null}
 
-          {isNhl && !nhlErrorMessage && !isNhlLoading && games.length === 0 ? (
+          {usesLiveApi && !liveErrorMessage && !isLiveLoading && games.length === 0 ? (
             <Text size="sm" className="text-teamgm-text-muted">
-              {SCORES_COPY.emptyNhl}
+              {emptyCopy}
             </Text>
           ) : null}
 
