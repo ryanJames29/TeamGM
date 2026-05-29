@@ -4,8 +4,8 @@ import React, { useCallback, useState } from 'react';
 import { AuthScreenShell } from '@/components/auth/auth-screen-shell';
 import { AuthTextField } from '@/components/auth/auth-text-field';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
+import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
-import { VStack } from '@/components/ui/vstack';
 import { AUTH_COPY } from '@/constants/copy';
 import { useAuth } from '@/contexts/auth-provider';
 import {
@@ -56,7 +56,7 @@ export default function SignUpScreen() {
   const isDisabled = isSubmitting || !isConfigured;
 
   return (
-    <AuthScreenShell title={AUTH_COPY.signUpTitle} subtitle={AUTH_COPY.signUpSubtitle}>
+    <AuthScreenShell heading={AUTH_COPY.signUpTitle}>
       <AuthTextField
         label={AUTH_COPY.emailLabel}
         placeholder={AUTH_COPY.emailPlaceholder}
@@ -108,23 +108,31 @@ export default function SignUpScreen() {
       <Button
         onPress={() => void onSubmit()}
         isDisabled={isDisabled}
-        className="rounded-lg bg-teamgm-accent data-[active=true]:bg-teamgm-accent-strong">
-        {isSubmitting ? <ButtonSpinner color="#fdf0d5" /> : null}
-        <ButtonText className="text-teamgm-text-primary">
+        action="default"
+        className="mt-6 h-14 w-full rounded-full bg-teamgm-info data-[active=true]:opacity-90">
+        {isSubmitting ? <ButtonSpinner color="#000000" /> : null}
+        <ButtonText className="font-semibold" style={{ color: '#000000' }}>
           {isSubmitting ? AUTH_COPY.signingUp : AUTH_COPY.signUp}
         </ButtonText>
       </Button>
 
-      <VStack space="xs" className="items-center pt-2">
-        <Text size="sm" className="text-teamgm-text-muted">
+      <HStack space="xs" className="flex-wrap items-center justify-center pt-2">
+        <Text size="sm" className="text-teamgm-text-primary">
           {AUTH_COPY.alreadyHaveAccount}
         </Text>
         <Link href="/login" asChild>
-          <Button variant="link" action="primary" isDisabled={isSubmitting}>
-            <ButtonText className="text-teamgm-info">{AUTH_COPY.signIn}</ButtonText>
+          <Button
+            variant="link"
+            action="default"
+            size="sm"
+            isDisabled={isSubmitting}
+            className="px-0">
+            <ButtonText className="text-sm font-normal text-teamgm-info">
+              {AUTH_COPY.signIn}
+            </ButtonText>
           </Button>
         </Link>
-      </VStack>
+      </HStack>
     </AuthScreenShell>
   );
 }
