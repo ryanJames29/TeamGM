@@ -7,12 +7,21 @@ import { Box } from '@/components/ui/box';
 import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { AI_INSIGHTS, FAVORITE_TEAMS, UPCOMING_GAME } from '@/mock-data/home-insights';
+import { AI_INSIGHTS, UPCOMING_GAME } from '@/mock-data/home-insights';
 import { HomeTabIcon } from '@/navigation/tab-icons';
+import { useAuth } from '@/contexts/auth-provider';
+import { LEAGUE_LABELS } from '@/constants/game-copy';
+import {
+  getRtkErrorMessage,
+  useGetFavoriteTeamsQuery,
+  type FavoriteTeamRow,
+} from '@/store/api';
 
 export const HOME_COPY = {
   title: 'Home',
   yourTeams: 'Your Teams',
+  noFavoriteTeams: 'Star a team on the Scores tab to pin them here.',
+  favoriteLoadError: 'Could not load favorite teams.',
   nextGame: 'Next Game',
   whyTonightMatters: 'Why Tonight Matters',
   fanConcernMeter: 'Fan Concern Meter',
@@ -50,6 +59,15 @@ function SectionHeader({ icon, iconColor, title }: SectionHeaderProps) {
 
 export default function HomeScreen() {
   const concernWidthPercent = AI_INSIGHTS.concernLevel.level * 10;
+  const { userId } = useAuth();
+  const {
+    data: favorites = [],
+    isLoading: favoritesLoading,
+    error: favoritesError,
+  } = useGetFavoriteTeamsQuery(userId ?? '', { skip: !userId });
+  const favoritesErrorMessage = favoritesError
+    ? getRtkErrorMessage(favoritesError, HOME_COPY.favoriteLoadError)
+    : null;
 
   return (
     <VStack className="flex-1 bg-teamgm-app">
@@ -60,26 +78,37 @@ export default function HomeScreen() {
             {HOME_COPY.yourTeams}
           </Text>
           <Box className="flex-row flex-wrap gap-2">
-            {FAVORITE_TEAMS.map((team) => (
-              <Box
-                key={`${team.league}-${team.name}`}
-                className="w-[48%] rounded-xl border border-teamgm-border bg-teamgm-secondary p-3">
-                <Box className="mb-2 self-start rounded bg-teamgm-surface px-2 py-1">
-                  <Text size="xs" className="text-teamgm-text-primary">
-                    {team.league}
+            {favoritesLoading ? (
+              <Text size="sm" className="text-teamgm-text-muted">
+                {HOME_COPY.yourTeams}
+              </Text>
+            ) : favoritesErrorMessage ? (
+              <Text size="sm" className="text-teamgm-accent">
+                {favoritesErrorMessage}
+              </Text>
+            ) : favorites.length === 0 ? (
+              <Text size="sm" className="text-teamgm-text-muted">
+                {HOME_COPY.noFavoriteTeams}
+              </Text>
+            ) : (
+              favorites.map((team: FavoriteTeamRow) => (
+                <Box
+                  key={`${team.league}-${team.api_sports_team_id}`}
+                  className="w-[48%] rounded-xl border border-teamgm-border bg-teamgm-secondary p-3">
+                  <Box className="mb-2 self-start rounded bg-teamgm-surface px-2 py-1">
+                    <Text size="xs" className="text-teamgm-text-primary">
+                      {LEAGUE_LABELS[team.league]}
+                    </Text>
+                  </Box>
+                  <Text size="sm" bold className="mb-1 text-teamgm-text-primary">
+                    {team.team_name}
+                  </Text>
+                  <Text size="xs" className="text-teamgm-text-muted">
+                    {team.team_abbreviation}
                   </Text>
                 </Box>
-                <Text size="sm" bold className="mb-1 text-teamgm-text-primary">
-                  {team.name}
-                </Text>
-                <Text size="xs" className="text-teamgm-text-muted">
-                  {team.record}
-                </Text>
-                <Text size="xs" className="text-teamgm-text-muted">
-                  {team.standing}
-                </Text>
-              </Box>
-            ))}
+              ))
+            )}
           </Box>
         </VStack>
 

@@ -1,18 +1,15 @@
 import { AppState, Platform } from 'react-native';
 import 'react-native-url-polyfill/auto';
-import 'expo-sqlite/localStorage/install';
 
 import { createClient, processLock } from '@supabase/supabase-js';
 
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/constants/supabase';
 
-// https://supabase.com/docs/guides/getting-started/quickstarts/expo-react-native
-// https://supabase.com/docs/guides/auth/quickstarts/react-native
+// Session lives in memory only — sign in again after a cold start.
 export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: localStorage,
     autoRefreshToken: true,
-    persistSession: true,
+    persistSession: false,
     detectSessionInUrl: false,
     lock: processLock,
   },

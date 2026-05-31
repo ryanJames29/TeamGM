@@ -1,18 +1,27 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useCallback } from 'react';
+import { Pressable } from 'react-native';
+
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import type { GameStatus, MockGame } from '@/mock-data/types/scores';
+import { Info, TextPrimary } from '@/constants/theme';
+import type { GameStatus, MockGame, MockTeamScore } from '@/mock-data/types/scores';
 import { HStack } from '@/components/ui/hstack';
 
 type GameScoreBoxProps = {
   game: MockGame;
+  onFavoriteTeam?: (team: MockTeamScore) => void;
+  isFavoriteTeam?: (teamId: number | undefined) => boolean;
+  isInteractive?: boolean;
 };
 
 function formatScore(score: number | null): string {
   return score === null ? '—' : String(score);
 }
 
-function formatTeamMeta(team: MockGame['awayTeam']): string {
+function formatTeamMeta(team: MockTeamScore): string {
   const { record, standing } = team;
   if (record && record !== '—' && standing) {
     return `${record} · ${standing}`;
@@ -105,11 +114,38 @@ type TeamScoreRowProps = {
   scoreLabel: string;
   recordLabel: string;
   isWinner: boolean;
+  showFavorite: boolean;
+  isFavorite: boolean;
+  onFavoritePress?: () => void;
 };
 
-function TeamScoreRow({ teamName, scoreLabel, recordLabel, isWinner }: TeamScoreRowProps) {
+function TeamScoreRow({
+  teamName,
+  scoreLabel,
+  recordLabel,
+  isWinner,
+  showFavorite,
+  isFavorite,
+  onFavoritePress,
+}: TeamScoreRowProps) {
   return (
-    <HStack className="items-start gap-3">
+    <HStack className="items-start gap-2">
+      {showFavorite ? (
+        <Pressable
+          onPress={onFavoritePress}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={isFavorite ? 'Remove favorite team' : 'Favorite team'}
+          className="mt-0.5 w-6 shrink-0">
+          <Ionicons
+            name={isFavorite ? 'star' : 'star-outline'}
+            size={18}
+            color={isFavorite ? TextPrimary : Info}
+          />
+        </Pressable>
+      ) : (
+        <Box className="w-6 shrink-0" />
+      )}
       <Text
         bold={isWinner}
         isTruncated
@@ -130,10 +166,26 @@ function TeamScoreRow({ teamName, scoreLabel, recordLabel, isWinner }: TeamScore
   );
 }
 
-export function GameScoreBox({ game }: GameScoreBoxProps) {
+export function GameScoreBox({
+  game,
+  onFavoriteTeam,
+  isFavoriteTeam,
+  isInteractive = true,
+}: GameScoreBoxProps) {
+  const router = useRouter();
   const display = getGameScoreDisplay(game);
 
-  return (
+  const canOpenDetail = isInteractive && (game.league === 'nhl' || game.league === 'mlb');
+  const showFavorite = Boolean(onFavoriteTeam && isFavoriteTeam);
+
+  const onOpenGame = useCallback(() => {
+    if (!canOpenDetail) {
+      return;
+    }
+    router.push(`/game/${game.league}/${game.id}`);
+  }, [canOpenDetail, game.id, game.league, router]);
+
+  const card = (
     <Box className="rounded-lg border border-teamgm-border bg-teamgm-surface p-4">
       <VStack space="sm" className="items-stretch">
         <TeamScoreRow
@@ -141,17 +193,33 @@ export function GameScoreBox({ game }: GameScoreBoxProps) {
           scoreLabel={display.awayScoreLabel}
           recordLabel={display.awayRecordLabel}
           isWinner={display.awayWins}
+          showFavorite={showFavorite}
+          isFavorite={isFavoriteTeam?.(game.awayTeam.id) ?? false}
+          onFavoritePress={() => onFavoriteTeam?.(game.awayTeam)}
         />
         <TeamScoreRow
           teamName={display.homeTeamName}
           scoreLabel={display.homeScoreLabel}
           recordLabel={display.homeRecordLabel}
           isWinner={display.homeWins}
+          showFavorite={showFavorite}
+          isFavorite={isFavoriteTeam?.(game.homeTeam.id) ?? false}
+          onFavoritePress={() => onFavoriteTeam?.(game.homeTeam)}
         />
         <Text size="sm" bold className={`self-start ${display.statusTextClass}`}>
           {display.statusLabel}
         </Text>
       </VStack>
     </Box>
+  );
+
+  if (!canOpenDetail) {
+    return card;
+  }
+
+  return (
+    <Pressable onPress={onOpenGame} accessibilityRole="button">
+      {card}
+    </Pressable>
   );
 }

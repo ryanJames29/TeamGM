@@ -7,12 +7,20 @@ import { ScreenHeader } from '@/components/screen-header';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { API_BASE_URL } from '@/constants/api';
+import { GAME_COPY } from '@/constants/game-copy';
 import { Accent } from '@/constants/theme';
+import { useAuth } from '@/contexts/auth-provider';
 import { getMockScoresByLeague } from '@/mock-data';
-import type { MajorLeague } from '@/mock-data/types/scores';
+import type { MajorLeague, MockTeamScore } from '@/mock-data/types/scores';
 import { ScoresTabIcon } from '@/navigation/tab-icons';
-import { getRtkErrorMessage } from '@/store/api/get-rtk-error-message';
-import { teamgmApi, useGetMlbGamesQuery, useGetNhlGamesQuery } from '@/store/api/teamgm-api';
+import {
+  getRtkErrorMessage,
+  teamgmApi,
+  useGetFavoriteTeamsQuery,
+  useGetMlbGamesQuery,
+  useGetNhlGamesQuery,
+  useToggleFavoriteTeamMutation,
+} from '@/store/api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectSelectedLeague, setSelectedLeague } from '@/store/slices/scores-slice';
 import { filterScoreboardGames } from '@/utils/filter-scoreboard-games';
@@ -50,6 +58,7 @@ function isLiveLeague(league: MajorLeague): league is LiveLeague {
 
 export default function ScoresScreen() {
   const dispatch = useAppDispatch();
+  const { userId } = useAuth();
   const selectedLeague = useAppSelector(selectSelectedLeague);
   const isNhl = selectedLeague === 'nhl';
   const isMlb = selectedLeague === 'mlb';
@@ -90,6 +99,52 @@ export default function ScoresScreen() {
   const liveError = isNhl ? nhlError : isMlb ? mlbError : undefined;
   const isLiveLoading = isNhl ? isNhlLoading : isMlb ? isMlbLoading : false;
   const refetchLive = isNhl ? refetchNhl : refetchMlb;
+
+  const { data: favoriteTeams = [], error: favoritesLoadError } = useGetFavoriteTeamsQuery(
+    userId ?? '',
+    { skip: !userId },
+  );
+  const [toggleFavoriteTeam, { error: favoriteToggleError }] = useToggleFavoriteTeamMutation();
+
+  const favoritesByLeague = useMemo(() => {
+    const map = new Map<MajorLeague, (typeof favoriteTeams)[number]>();
+    for (const row of favoriteTeams) {
+      map.set(row.league, row);
+    }
+    return map;
+  }, [favoriteTeams]);
+
+  const isFavoriteTeam = useCallback(
+    (league: MajorLeague, teamId: number | undefined) => {
+      if (teamId == null) {
+        return false;
+      }
+      return favoritesByLeague.get(league)?.api_sports_team_id === teamId;
+    },
+    [favoritesByLeague],
+  );
+
+  const onFavoriteTeam = useCallback(
+    (league: MajorLeague, team: MockTeamScore) => {
+      if (!userId || team.id == null) {
+        return;
+      }
+
+      void toggleFavoriteTeam({
+        userId,
+        league,
+        team,
+        isFavorite: isFavoriteTeam(league, team.id),
+      }).unwrap();
+    },
+    [userId, toggleFavoriteTeam, isFavoriteTeam],
+  );
+
+  const favoriteErrorMessage = favoriteToggleError
+    ? getRtkErrorMessage(favoriteToggleError, GAME_COPY.favoriteUpdateError)
+    : favoritesLoadError
+      ? getRtkErrorMessage(favoritesLoadError, GAME_COPY.favoriteLoadError)
+      : null;
 
   const games = useMemo(() => {
     const list = usesLiveApi ? (liveData?.games ?? []) : getMockScoresByLeague(selectedLeague);
@@ -148,6 +203,12 @@ export default function ScoresScreen() {
             </Text>
           ) : null}
 
+          {favoriteErrorMessage ? (
+            <Text size="sm" className="text-teamgm-accent">
+              {favoriteErrorMessage}
+            </Text>
+          ) : null}
+
           {usesLiveApi && !liveErrorMessage && !isLiveLoading && games.length === 0 ? (
             <Text size="sm" className="text-teamgm-text-muted">
               {emptyCopy}
@@ -155,7 +216,16 @@ export default function ScoresScreen() {
           ) : null}
 
           {games.map((game) => (
-            <GameScoreBox key={game.id} game={game} />
+            <GameScoreBox
+              key={game.id}
+              game={game}
+              onFavoriteTeam={
+                usesLiveApi ? (team) => onFavoriteTeam(game.league, team) : undefined
+              }
+              isFavoriteTeam={
+                usesLiveApi ? (teamId) => isFavoriteTeam(game.league, teamId) : undefined
+              }
+            />
           ))}
         </ScrollView>
       )}

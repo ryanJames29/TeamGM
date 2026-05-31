@@ -1,0 +1,30 @@
+export const GAME_COPY = {
+  boxScore: 'Box score',
+  teamStats: 'Team stats',
+  scoringPlays: 'Scoring plays',
+  playerStatsNote: 'Player box scores are not available from the API for this sport.',
+  loading: 'Loading game…',
+  loadError: 'Could not load this game.',
+  notFound: 'Game not found.',
+  played: 'Played',
+  wins: 'Wins',
+  losses: 'Losses',
+  winPct: 'Win %',
+  runsFor: 'Runs for',
+  runsAgainst: 'Runs against',
+  goalsFor: 'Goals for',
+  goalsAgainst: 'Goals against',
+  hits: 'Hits',
+  errors: 'Errors',
+  favorite: 'Favorite team',
+  removeFavorite: 'Remove favorite',
+  favoriteLoadError: 'Could not load favorite teams.',
+  favoriteUpdateError: 'Could not update favorite team.',
+} as const;
+
+export const LEAGUE_LABELS = {
+  nfl: 'NFL',
+  nba: 'NBA',
+  mlb: 'MLB',
+  nhl: 'NHL',
+} as const;

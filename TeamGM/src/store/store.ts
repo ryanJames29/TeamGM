@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 
-import { teamgmApi } from '@/store/api/teamgm-api';
+import { teamgmApi } from '@/store/api';
 import { scoresReducer } from '@/store/slices/scores-slice';
 
 export const store = configureStore({

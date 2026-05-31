@@ -1,39 +1,33 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import type { EndpointBuilder } from '@reduxjs/toolkit/query';
 
-import { API_BASE_URL, API_MLB_GAMES_PATH, API_NHL_GAMES_PATH } from '@/constants/api';
+import { API_BASE_URL } from '@/constants/api';
 
-import type { MlbScoresResponse, NhlScoresResponse } from './types';
+import { favoriteTeamsEndpoints } from './endpoints/favorite-teams-endpoints';
+import { gameDetailEndpoints } from './endpoints/game-detail-endpoints';
+import { scoresEndpoints } from './endpoints/scores-endpoints';
 
 export const teamgmApi = createApi({
   reducerPath: 'teamgmApi',
   baseQuery: fetchBaseQuery({ baseUrl: API_BASE_URL }),
-  tagTypes: ['NhlGames', 'MlbGames'],
+  tagTypes: ['NhlGames', 'MlbGames', 'GameDetail', 'FavoriteTeams'],
   endpoints: (builder) => ({
-    getNhlGames: builder.query<NhlScoresResponse, string | void>({
-      query: (centerDate) => ({
-        url: API_NHL_GAMES_PATH,
-        params: centerDate ? { date: centerDate } : undefined,
-      }),
-      transformResponse: (response: NhlScoresResponse) => ({
-        ...response,
-        games: Array.isArray(response.games) ? response.games : [],
-      }),
-      providesTags: ['NhlGames'],
-      keepUnusedDataFor: 120,
-    }),
-    getMlbGames: builder.query<MlbScoresResponse, string | void>({
-      query: (centerDate) => ({
-        url: API_MLB_GAMES_PATH,
-        params: centerDate ? { date: centerDate } : undefined,
-      }),
-      transformResponse: (response: MlbScoresResponse) => ({
-        ...response,
-        games: Array.isArray(response.games) ? response.games : [],
-      }),
-      providesTags: ['MlbGames'],
-      keepUnusedDataFor: 120,
-    }),
+    ...scoresEndpoints(builder),
+    ...gameDetailEndpoints(builder),
+    ...favoriteTeamsEndpoints(builder),
   }),
 });
 
-export const { useGetNhlGamesQuery, useGetMlbGamesQuery } = teamgmApi;
+export type TeamgmEndpointBuilder = EndpointBuilder<
+  ReturnType<typeof fetchBaseQuery>,
+  'NhlGames' | 'MlbGames' | 'GameDetail' | 'FavoriteTeams',
+  'teamgmApi'
+>;
+
+export const {
+  useGetNhlGamesQuery,
+  useGetMlbGamesQuery,
+  useGetGameDetailQuery,
+  useGetFavoriteTeamsQuery,
+  useToggleFavoriteTeamMutation,
+} = teamgmApi;

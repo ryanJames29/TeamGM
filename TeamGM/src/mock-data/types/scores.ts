@@ -5,6 +5,7 @@ export type MajorLeague = (typeof MAJOR_LEAGUES)[number];
 export type GameStatus = 'scheduled' | 'live' | 'final';
 
 export type MockTeamScore = {
+  id?: number;
   name: string;
   abbreviation: string;
   record: string;
