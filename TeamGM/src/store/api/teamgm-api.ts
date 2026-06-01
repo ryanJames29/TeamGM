@@ -5,22 +5,24 @@ import { API_BASE_URL } from '@/constants/api';
 
 import { favoriteTeamsEndpoints } from './endpoints/favorite-teams-endpoints';
 import { gameDetailEndpoints } from './endpoints/game-detail-endpoints';
+import { homeInsightsEndpoints } from './endpoints/home-insights-endpoints';
 import { scoresEndpoints } from './endpoints/scores-endpoints';
 
 export const teamgmApi = createApi({
   reducerPath: 'teamgmApi',
   baseQuery: fetchBaseQuery({ baseUrl: API_BASE_URL }),
-  tagTypes: ['NhlGames', 'MlbGames', 'GameDetail', 'FavoriteTeams'],
+  tagTypes: ['NhlGames', 'MlbGames', 'GameDetail', 'FavoriteTeams', 'HomeInsights'],
   endpoints: (builder) => ({
     ...scoresEndpoints(builder),
     ...gameDetailEndpoints(builder),
     ...favoriteTeamsEndpoints(builder),
+    ...homeInsightsEndpoints(builder),
   }),
 });
 
 export type TeamgmEndpointBuilder = EndpointBuilder<
   ReturnType<typeof fetchBaseQuery>,
-  'NhlGames' | 'MlbGames' | 'GameDetail' | 'FavoriteTeams',
+  'NhlGames' | 'MlbGames' | 'GameDetail' | 'FavoriteTeams' | 'HomeInsights',
   'teamgmApi'
 >;
 
@@ -30,4 +32,6 @@ export const {
   useGetGameDetailQuery,
   useGetFavoriteTeamsQuery,
   useToggleFavoriteTeamMutation,
+  useGetHomeInsightsQuery,
+  useGenerateHomeInsightsMutation,
 } = teamgmApi;

@@ -49,3 +49,48 @@ export type GameDetailResponse = {
   playerStatsAvailable: boolean;
   message?: string | null;
 };
+
+export type HomeInsightPlayerTrend = {
+  name: string;
+  stat: string;
+};
+
+export type TeamHomeInsight = {
+  teamKey: string;
+  league: MajorLeague;
+  teamName: string;
+  upcomingGame: {
+    team: string;
+    opponent: string;
+    time: string;
+    location: string;
+  };
+  whyItMatters: string[];
+  briefing: {
+    team: string;
+    summary: string;
+    context: string;
+  };
+  concernLevel: {
+    level: number;
+    description: string;
+  };
+  playerTrends: {
+    stockUp: HomeInsightPlayerTrend[];
+    stockDown: HomeInsightPlayerTrend[];
+  };
+  recentPerformance: {
+    headline: string;
+    summary: string;
+    wentRight: string;
+    wentWrong: string;
+  };
+};
+
+export type HomeInsightsResponse = {
+  status: string;
+  generatedAt: string;
+  factsAsOf?: string | null;
+  source: string;
+  insight: TeamHomeInsight;
+};
