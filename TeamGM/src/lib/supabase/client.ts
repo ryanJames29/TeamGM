@@ -5,11 +5,14 @@ import { createClient, processLock } from '@supabase/supabase-js';
 
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/constants/supabase';
 
-// Session lives in memory only — sign in again after a cold start.
+import { supabaseAuthStorage } from './auth-storage';
+
+// https://supabase.com/docs/guides/auth/quickstarts/react-native
 export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
+    storage: supabaseAuthStorage,
     autoRefreshToken: true,
-    persistSession: false,
+    persistSession: true,
     detectSessionInUrl: false,
     lock: processLock,
   },
