@@ -75,9 +75,7 @@ export type TeamHomeInsight = {
   };
   recentPerformance: {
     headline: string;
-    summary: string;
-    wentRight: string;
-    wentWrong: string;
+    lastGameSummary: string;
   };
 };
 

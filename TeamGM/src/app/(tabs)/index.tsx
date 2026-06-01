@@ -37,8 +37,6 @@ export const HOME_COPY = {
   stockUp: 'Stock Up',
   stockDown: 'Stock Down',
   recentPerformance: 'Recent Performance',
-  whatWentRight: 'What went right',
-  whatWentWrong: 'What went wrong',
   briefingSuffix: 'Briefing',
 } as const;
 
@@ -313,27 +311,9 @@ export default function HomeScreen() {
             <Text size="xs" bold className="mb-2 text-teamgm-text-primary">
               {insight.recentPerformance.headline}
             </Text>
-            <Text size="xs" className="mb-3 leading-5 text-teamgm-text-muted">
-              {insight.recentPerformance.summary}
+            <Text size="xs" className="leading-5 text-teamgm-text-muted">
+              {insight.recentPerformance.lastGameSummary}
             </Text>
-            <HStack className="gap-2">
-              <VStack className="flex-1" space="xs">
-                <Text size="xs" className="text-green-400">
-                  {HOME_COPY.whatWentRight}
-                </Text>
-                <Text size="xs" className="text-teamgm-text-muted">
-                  {insight.recentPerformance.wentRight}
-                </Text>
-              </VStack>
-              <VStack className="flex-1" space="xs">
-                <Text size="xs" className="text-teamgm-accent">
-                  {HOME_COPY.whatWentWrong}
-                </Text>
-                <Text size="xs" className="text-teamgm-text-muted">
-                  {insight.recentPerformance.wentWrong}
-                </Text>
-              </VStack>
-            </HStack>
           </Box>
         </Box>
           </>
