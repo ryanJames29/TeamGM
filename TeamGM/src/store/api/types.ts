@@ -59,12 +59,6 @@ export type TeamHomeInsight = {
   teamKey: string;
   league: MajorLeague;
   teamName: string;
-  upcomingGame: {
-    team: string;
-    opponent: string;
-    time: string;
-    location: string;
-  };
   whyItMatters: string[];
   briefing: {
     team: string;
@@ -93,4 +87,17 @@ export type HomeInsightsResponse = {
   factsAsOf?: string | null;
   source: string;
   insight: TeamHomeInsight;
+  nextGame?: {
+    id?: number | null;
+    status?: string | null;
+    scheduledAt?: string | null;
+    periodLabel?: string | null;
+    venue?: string | null;
+    teamScore?: number | null;
+    opponentScore?: number | null;
+    opponentName?: string | null;
+    opponentAbbreviation?: string | null;
+    opponentApiSportsTeamId?: number | null;
+    location?: string | null;
+  } | null;
 };

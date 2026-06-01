@@ -104,15 +104,18 @@ export default function HomeScreen() {
     : null;
 
   const insight = insightsData?.insight;
+  const nextGame = insightsData?.nextGame ?? null;
   const concernWidthPercent = insight ? insight.concernLevel.level * 10 : 0;
 
-  const upcomingLocation =
-    insight &&
-    (insight.upcomingGame.location === '@' || insight.upcomingGame.location === 'vs')
-      ? insight.upcomingGame.location
-      : insight
-        ? `${insight.upcomingGame.location} `
-        : '';
+  const upcomingLocation = nextGame?.location === 'away' ? '@' : nextGame?.location === 'home' ? 'vs' : '';
+
+  const upcomingWhen = nextGame?.scheduledAt
+    ? new Date(nextGame.scheduledAt).toLocaleString(undefined, {
+        weekday: 'short',
+        hour: 'numeric',
+        minute: '2-digit',
+      })
+    : '';
 
   return (
     <VStack className="flex-1 bg-teamgm-app">
@@ -193,10 +196,10 @@ export default function HomeScreen() {
           <SectionHeader icon="calendar-outline" iconColor="#669bbc" title={HOME_COPY.nextGame} />
           <Box className="rounded-lg border border-teamgm-border bg-teamgm-surface p-3">
             <Text size="sm" className="mb-1 text-teamgm-text-primary">
-              {insight.upcomingGame.team} {upcomingLocation} {insight.upcomingGame.opponent}
+              {insight.teamName} {upcomingLocation} {nextGame?.opponentName ?? ''}
             </Text>
             <Text size="xs" className="text-teamgm-text-muted">
-              {insight.upcomingGame.time}
+              {upcomingWhen}
             </Text>
           </Box>
         </Box>
