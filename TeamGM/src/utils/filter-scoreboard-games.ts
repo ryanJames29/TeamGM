@@ -1,7 +1,7 @@
 import type { MockGame } from '@/mock-data/types/scores';
 
-function utcDayStartMs(value: Date): number {
-  return Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate());
+function localDayStartMs(value: Date): number {
+  return new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime();
 }
 
 function gameDayMs(game: MockGame): number | null {
@@ -9,7 +9,7 @@ function gameDayMs(game: MockGame): number | null {
     return null;
   }
   const ms = new Date(game.scheduledAt).getTime();
-  return Number.isNaN(ms) ? null : utcDayStartMs(new Date(game.scheduledAt));
+  return Number.isNaN(ms) ? null : localDayStartMs(new Date(game.scheduledAt));
 }
 
 function teamNames(game: MockGame): string[] {
@@ -21,7 +21,7 @@ function teamNames(game: MockGame): string[] {
  * 2. Tomorrow's scheduled games where neither team plays today.
  */
 export function filterScoreboardGames(games: MockGame[]): MockGame[] {
-  const todayMs = utcDayStartMs(new Date());
+  const todayMs = localDayStartMs(new Date());
   const tomorrowMs = todayMs + 24 * 60 * 60 * 1000;
 
   const playingToday = new Set<string>();
