@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ScrollView } from 'react-native';
 
 import { ScreenHeader } from '@/components/screen-header';
@@ -12,13 +12,18 @@ import { API_BASE_URL } from '@/constants/api';
 import { HomeTabIcon } from '@/navigation/tab-icons';
 import { useAuth } from '@/contexts/auth-provider';
 import { LEAGUE_LABELS } from '@/constants/game-copy';
+import type { MockGame, MockTeamScore } from '@/mock-data/types/scores';
 import {
   getRtkErrorMessage,
   homeInsightsApiEnabled,
+  teamgmApi,
   useGenerateHomeInsightsMutation,
   useGetFavoriteTeamsQuery,
+  useGetMlbGamesQuery,
+  useGetNhlGamesQuery,
   type FavoriteTeamRow,
 } from '@/store/api';
+import { useAppSelector } from '@/store/hooks';
 
 export const HOME_COPY = {
   title: 'Home',
@@ -70,6 +75,78 @@ export default function HomeScreen() {
     isLoading: favoritesLoading,
     error: favoritesError,
   } = useGetFavoriteTeamsQuery(userId ?? '', { skip: !userId });
+
+  const wantsNhlNextGames = favorites.some((team) => team.league === 'nhl');
+  const wantsMlbNextGames = favorites.some((team) => team.league === 'mlb');
+
+  // Kick off fetches early so cards can render next game.
+  // Use `view=window` so we can always find a true "next game" even if the team played today.
+  useGetNhlGamesQuery({ view: 'window' }, { skip: !hasLiveApi || !wantsNhlNextGames });
+  useGetMlbGamesQuery({ view: 'window' }, { skip: !hasLiveApi || !wantsMlbNextGames });
+
+  // Reuse whatever is already in RTK Query cache (e.g. loaded from Scores tab).
+  const cachedNhl = useAppSelector(teamgmApi.endpoints.getNhlGames.select({ view: 'window' }));
+  const cachedMlb = useAppSelector(teamgmApi.endpoints.getMlbGames.select({ view: 'window' }));
+
+  const favoriteNextGameByKey = useMemo(() => {
+    const map = new Map<string, { matchup: string; when: string }>();
+
+    const nhlGames = cachedNhl.data?.games;
+    const mlbGames = cachedMlb.data?.games;
+
+    for (const favorite of favorites) {
+      if (favorite.api_sports_team_id == null) {
+        continue;
+      }
+
+      const leagueGames =
+        favorite.league === 'nhl'
+          ? nhlGames
+          : favorite.league === 'mlb'
+            ? mlbGames
+            : undefined;
+
+      if (!Array.isArray(leagueGames)) {
+        continue;
+      }
+
+      const teamId = favorite.api_sports_team_id;
+      const nextGame = leagueGames
+        .filter(
+          (game: MockGame) =>
+            (game.status === 'live' || game.status === 'scheduled') &&
+            (game.awayTeam.id === teamId || game.homeTeam.id === teamId),
+        )
+        .sort((a: MockGame, b: MockGame) => {
+          const aTime = a.scheduledAt ? new Date(a.scheduledAt).getTime() : Number.POSITIVE_INFINITY;
+          const bTime = b.scheduledAt ? new Date(b.scheduledAt).getTime() : Number.POSITIVE_INFINITY;
+          return aTime - bTime;
+        })[0];
+
+      if (!nextGame) {
+        continue;
+      }
+
+      const isAway = nextGame.awayTeam.id === teamId;
+      const opponent: MockTeamScore = isAway ? nextGame.homeTeam : nextGame.awayTeam;
+      const symbol = isAway ? '@' : 'vs';
+
+      const teamLabel = favorite.team_abbreviation || favorite.team_name;
+      const opponentLabel = opponent.abbreviation || opponent.name;
+      const matchup = `${teamLabel} ${symbol} ${opponentLabel}`;
+      const when = nextGame.scheduledAt
+        ? new Date(nextGame.scheduledAt).toLocaleString(undefined, {
+            weekday: 'short',
+            hour: 'numeric',
+            minute: '2-digit',
+          })
+        : '';
+
+      map.set(`${favorite.league}-${favorite.api_sports_team_id}`, { matchup, when });
+    }
+
+    return map;
+  }, [cachedMlb.data?.games, cachedNhl.data?.games, favorites]);
 
   const hasInsightEligibleFavorite = favorites.some(
     (team) => team.league === 'nhl' || team.league === 'mlb',
@@ -149,6 +226,16 @@ export default function HomeScreen() {
                   <Text size="xs" className="text-teamgm-text-muted">
                     {team.team_abbreviation}
                   </Text>
+                  {favoriteNextGameByKey.get(`${team.league}-${team.api_sports_team_id}`) ? (
+                    <Box className="mt-3 rounded-lg border border-teamgm-border bg-teamgm-surface p-2">
+                      <Text size="xs" className="mb-1 text-teamgm-text-primary">
+                        {favoriteNextGameByKey.get(`${team.league}-${team.api_sports_team_id}`)?.matchup}
+                      </Text>
+                      <Text size="xs" className="text-teamgm-text-muted">
+                        {favoriteNextGameByKey.get(`${team.league}-${team.api_sports_team_id}`)?.when}
+                      </Text>
+                    </Box>
+                  ) : null}
                 </Box>
               ))
             )}
