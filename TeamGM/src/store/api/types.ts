@@ -50,11 +50,6 @@ export type GameDetailResponse = {
   message?: string | null;
 };
 
-export type HomeInsightPlayerTrend = {
-  name: string;
-  stat: string;
-};
-
 export type TeamHomeInsight = {
   teamKey: string;
   league: MajorLeague;
@@ -68,10 +63,6 @@ export type TeamHomeInsight = {
   concernLevel: {
     level: number;
     description: string;
-  };
-  playerTrends: {
-    stockUp: HomeInsightPlayerTrend[];
-    stockDown: HomeInsightPlayerTrend[];
   };
   recentPerformance: {
     headline: string;

@@ -33,9 +33,6 @@ export const HOME_COPY = {
   nextGame: 'Next Game',
   whyTonightMatters: 'Why Tonight Matters',
   fanConcernMeter: 'Fan Concern Meter',
-  playerTrends: 'Player Trends',
-  stockUp: 'Stock Up',
-  stockDown: 'Stock Down',
   recentPerformance: 'Recent Performance',
   briefingSuffix: 'Briefing',
 } as const;
@@ -259,46 +256,6 @@ export default function HomeScreen() {
           <Text size="xs" className="leading-5 text-teamgm-text-muted">
             {insight.concernLevel.description}
           </Text>
-        </Box>
-
-        <Box className="rounded-xl border border-teamgm-border bg-teamgm-secondary p-4">
-          <SectionHeader icon="flame-outline" iconColor="#f87171" title={HOME_COPY.playerTrends} />
-          <VStack space="md">
-            <VStack space="sm">
-              <Text size="xs" bold className="text-green-400">
-                {HOME_COPY.stockUp}
-              </Text>
-              {insight.playerTrends.stockUp.map((player) => (
-                <Box
-                  key={player.name}
-                  className="rounded-lg border border-teamgm-border bg-teamgm-surface p-2">
-                  <Text size="xs" className="text-teamgm-text-primary">
-                    {player.name}
-                  </Text>
-                  <Text size="xs" className="text-teamgm-text-muted">
-                    {player.stat}
-                  </Text>
-                </Box>
-              ))}
-            </VStack>
-            <VStack space="sm">
-              <Text size="xs" bold className="text-red-400">
-                {HOME_COPY.stockDown}
-              </Text>
-              {insight.playerTrends.stockDown.map((player) => (
-                <Box
-                  key={player.name}
-                  className="rounded-lg border border-teamgm-border bg-teamgm-surface p-2">
-                  <Text size="xs" className="text-teamgm-text-primary">
-                    {player.name}
-                  </Text>
-                  <Text size="xs" className="text-teamgm-text-muted">
-                    {player.stat}
-                  </Text>
-                </Box>
-              ))}
-            </VStack>
-          </VStack>
         </Box>
 
         <Box className="rounded-xl border border-teamgm-border bg-teamgm-secondary p-4">
