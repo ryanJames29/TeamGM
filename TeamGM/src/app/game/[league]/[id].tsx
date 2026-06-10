@@ -105,17 +105,17 @@ function GameDetailMatchupHeader({ game }: { game: MockGame }) {
     <HStack className="w-full max-w-md items-center justify-center self-center pt-4">
       <TeamNamesColumn team={game.awayTeam} />
       <VStack className="shrink-0 items-center gap-1 px-3">
-        <Text size="md" className="text-center text-teamgm-accent">
+        <Text size="lg" className="text-center text-teamgm-accent">
           {timeLabel}
         </Text>
         <HStack className="items-center gap-2">
-          <Text size="2xl" bold className="tabular-nums text-teamgm-accent">
+          <Text size="3xl" bold className="tabular-nums text-teamgm-accent">
             {awayScore}
           </Text>
           <Text size="lg" bold className="text-teamgm-text-primary">
             {GAME_COPY.versus}
           </Text>
-          <Text size="2xl" bold className="tabular-nums text-teamgm-accent">
+          <Text size="3xl" bold className="tabular-nums text-teamgm-accent">
             {homeScore}
           </Text>
         </HStack>
