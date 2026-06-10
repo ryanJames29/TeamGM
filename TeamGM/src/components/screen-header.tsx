@@ -26,7 +26,7 @@ export function ScreenHeader({ title, onBack }: ScreenHeaderProps) {
 
   return (
     <Box className="bg-teamgm-secondary" style={{ paddingTop: top }}>
-      <Box className="h-12 flex-row items-center px-4">
+      <Box className="h-10 flex-row items-center px-4">
         <Box className="w-10 items-start justify-center">
           {showBack ? (
             <Pressable
@@ -39,7 +39,7 @@ export function ScreenHeader({ title, onBack }: ScreenHeaderProps) {
           ) : null}
         </Box>
         <Box className="flex-1 items-center justify-center">
-          <Text size="lg" bold className="text-teamgm-text-primary">
+          <Text size="2xl" bold className="pb-4 text-teamgm-text-primary">
             {displayTitle}
           </Text>
         </Box>
