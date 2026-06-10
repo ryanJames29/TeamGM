@@ -77,11 +77,11 @@ function TeamNamesColumn({ team }: { team: MockTeamScore }) {
   return (
     <Box className="flex-1 items-center px-2">
       <VStack className="items-center">
-        <Text size="md" bold className="text-center text-teamgm-text-primary">
+        <Text size="lg" bold className="text-center text-teamgm-text-primary">
           {city}
         </Text>
         {nickname ? (
-          <Text size="md" bold className="text-center text-teamgm-text-primary">
+          <Text size="lg" bold className="text-center text-teamgm-text-primary">
             {nickname}
           </Text>
         ) : null}
@@ -112,7 +112,7 @@ function GameDetailMatchupHeader({ game }: { game: MockGame }) {
           <Text size="2xl" bold className="tabular-nums text-teamgm-accent">
             {awayScore}
           </Text>
-          <Text size="md" bold className="text-teamgm-text-primary">
+          <Text size="lg" bold className="text-teamgm-text-primary">
             {GAME_COPY.versus}
           </Text>
           <Text size="2xl" bold className="tabular-nums text-teamgm-accent">
