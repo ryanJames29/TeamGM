@@ -344,15 +344,17 @@ export default function GameDetailScreen() {
             homeTeamName={data.game.homeTeam.name}
           />
 
-          <CombinedTeamStatsBlock
-            league={leagueParam as LiveLeague}
-            awayTeamName={data.game.awayTeam.name}
-            homeTeamName={data.game.homeTeam.name}
-            awayStanding={data.game.awayTeam.standing}
-            homeStanding={data.game.homeTeam.standing}
-            awayStats={data.teamStats.away}
-            homeStats={data.teamStats.home}
-          />
+          {leagueParam === 'mlb' ? (
+            <CombinedTeamStatsBlock
+              league="mlb"
+              awayTeamName={data.game.awayTeam.name}
+              homeTeamName={data.game.homeTeam.name}
+              awayStanding={data.game.awayTeam.standing}
+              homeStanding={data.game.homeTeam.standing}
+              awayStats={data.teamStats.away}
+              homeStats={data.teamStats.home}
+            />
+          ) : null}
 
           {data.events?.length ? <EventsList events={data.events} /> : null}
 
