@@ -102,7 +102,7 @@ function GameDetailMatchupHeader({ game }: { game: MockGame }) {
   const homeScore = formatDetailScore(game.homeTeam.score);
 
   return (
-    <HStack className="w-full max-w-md items-center justify-center self-center py-4">
+    <HStack className="w-full max-w-md items-center justify-center self-center pt-4">
       <TeamNamesColumn team={game.awayTeam} />
       <VStack className="shrink-0 items-center gap-1 px-3">
         <Text size="md" className="text-center text-teamgm-accent">
@@ -331,7 +331,10 @@ export default function GameDetailScreen() {
           </Text>
         </VStack>
       ) : data ? (
-        <ScrollView className="flex-1" contentContainerClassName="gap-4 px-4 pb-8">
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="grow-0 gap-4 px-4 pt-4"
+          contentContainerStyle={{ paddingBottom: 0 }}>
           <GameDetailMatchupHeader game={data.game} />
 
           <GameDetailBoxScore
