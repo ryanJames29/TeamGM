@@ -112,7 +112,7 @@ function GameDetailMatchupHeader({ game }: { game: MockGame }) {
           <Text size="2xl" bold className="tabular-nums text-teamgm-accent">
             {awayScore}
           </Text>
-          <Text size="md" bold className="text-teamgm-text-muted">
+          <Text size="md" bold className="text-teamgm-text-primary">
             {GAME_COPY.versus}
           </Text>
           <Text size="2xl" bold className="tabular-nums text-teamgm-accent">
