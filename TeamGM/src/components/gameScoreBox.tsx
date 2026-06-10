@@ -21,12 +21,8 @@ function formatScore(score: number | null): string {
   return score === null ? '—' : String(score);
 }
 
-function formatTeamMeta(team: MockTeamScore): string {
-  const { record, standing } = team;
-  if (record && record !== '—' && standing) {
-    return `${record} · ${standing}`;
-  }
-  return record || '—';
+function formatTeamRecord(team: MockTeamScore): string {
+  return team.record || '—';
 }
 
 /** NHL live clock: "12:34 - 3rd". Also normalizes legacy mock "3rd 12:34". */
@@ -96,14 +92,8 @@ function getGameScoreDisplay(game: MockGame) {
     homeTeamName: game.homeTeam.name,
     awayScoreLabel: formatScore(awayScore),
     homeScoreLabel: formatScore(homeScore),
-    awayRecordLabel:
-      game.league === 'nhl' || game.league === 'mlb'
-        ? formatTeamMeta(game.awayTeam)
-        : game.awayTeam.record,
-    homeRecordLabel:
-      game.league === 'nhl' || game.league === 'mlb'
-        ? formatTeamMeta(game.homeTeam)
-        : game.homeTeam.record,
+    awayRecordLabel: formatTeamRecord(game.awayTeam),
+    homeRecordLabel: formatTeamRecord(game.homeTeam),
     statusLabel: getStatusLabel(game),
     statusTextClass: getStatusTextClass(game.status),
   };
@@ -129,14 +119,14 @@ function TeamScoreRow({
   onFavoritePress,
 }: TeamScoreRowProps) {
   return (
-    <HStack className="items-start gap-2">
+    <HStack className="items-center gap-2">
       {showFavorite ? (
         <Pressable
           onPress={onFavoritePress}
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={isFavorite ? 'Remove favorite team' : 'Favorite team'}
-          className="mt-0.5 w-6 shrink-0">
+          className="w-6 shrink-0">
           <Ionicons
             name={isFavorite ? 'star' : 'star-outline'}
             size={18}
@@ -146,22 +136,21 @@ function TeamScoreRow({
       ) : (
         <Box className="w-6 shrink-0" />
       )}
-      <Text
-        bold={isWinner}
-        isTruncated
-        className="min-w-0 flex-1 self-start text-teamgm-text-primary">
+      <Text bold={isWinner} isTruncated className="min-w-0 flex-1 text-teamgm-text-primary">
         {teamName}
       </Text>
-      <Text
-        bold={isWinner}
-        className="w-8 shrink-0 self-start text-right tabular-nums text-teamgm-text-primary">
-        {scoreLabel}
-      </Text>
-      <Text
-        size="sm"
-        className="w-[108px] shrink-0 self-start text-right leading-5 text-teamgm-text-muted">
-        {recordLabel}
-      </Text>
+      <HStack className="shrink-0 items-center gap-3">
+        <Text
+          bold={isWinner}
+          className="w-6 text-right tabular-nums text-teamgm-text-primary">
+          {scoreLabel}
+        </Text>
+        <Text
+          size="sm"
+          className="min-w-[72px] text-left tabular-nums text-teamgm-text-muted">
+          {recordLabel}
+        </Text>
+      </HStack>
     </HStack>
   );
 }
@@ -206,7 +195,7 @@ export function GameScoreBox({
           isFavorite={isFavoriteTeam?.(game.homeTeam.id) ?? false}
           onFavoritePress={() => onFavoriteTeam?.(game.homeTeam)}
         />
-        <Text size="sm" bold className={`self-start ${display.statusTextClass}`}>
+        <Text size="sm" bold className={`self-start pl-0.5 ${display.statusTextClass}`}>
           {display.statusLabel}
         </Text>
       </VStack>

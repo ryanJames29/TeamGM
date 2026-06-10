@@ -6,7 +6,7 @@ import { LeagueSelector } from '@/components/leagueSelector';
 import { ScreenHeader } from '@/components/screen-header';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { API_BASE_URL } from '@/constants/api';
+import { API_BASE_URL, LIVE_SCORES_POLL_INTERVAL_MS } from '@/constants/api';
 import { GAME_COPY } from '@/constants/game-copy';
 import { Accent } from '@/constants/theme';
 import { useAuth } from '@/contexts/auth-provider';
@@ -49,9 +49,6 @@ const LIVE_LEAGUES = ['nhl', 'mlb'] as const satisfies readonly MajorLeague[];
 
 type LiveLeague = (typeof LIVE_LEAGUES)[number];
 
-// Backend refreshes live scores every 60s via Redis jobs — match that cadence.
-const LIVE_POLL_INTERVAL_MS = 60_000;
-
 function isLiveLeague(league: MajorLeague): league is LiveLeague {
   return LIVE_LEAGUES.includes(league as LiveLeague);
 }
@@ -82,7 +79,7 @@ export default function ScoresScreen() {
     refetch: refetchNhl,
   } = useGetNhlGamesQuery(undefined, {
     skip: !isNhl || !canReachApi,
-    pollingInterval: isNhl && hasLiveGames ? LIVE_POLL_INTERVAL_MS : 0,
+    pollingInterval: isNhl && hasLiveGames ? LIVE_SCORES_POLL_INTERVAL_MS : 0,
   });
 
   const {
@@ -92,7 +89,7 @@ export default function ScoresScreen() {
     refetch: refetchMlb,
   } = useGetMlbGamesQuery(undefined, {
     skip: !isMlb || !canReachApi,
-    pollingInterval: isMlb && hasLiveGames ? LIVE_POLL_INTERVAL_MS : 0,
+    pollingInterval: isMlb && hasLiveGames ? LIVE_SCORES_POLL_INTERVAL_MS : 0,
   });
 
   const liveData = isNhl ? nhlData : isMlb ? mlbData : undefined;
@@ -146,10 +143,15 @@ export default function ScoresScreen() {
       ? getRtkErrorMessage(favoritesLoadError, GAME_COPY.favoriteLoadError)
       : null;
 
+  const favoriteTeamIdsForLeague = useMemo(() => {
+    const favorite = favoritesByLeague.get(selectedLeague);
+    return favorite ? [favorite.api_sports_team_id] : [];
+  }, [favoritesByLeague, selectedLeague]);
+
   const games = useMemo(() => {
     const list = usesLiveApi ? (liveData?.games ?? []) : getMockScoresByLeague(selectedLeague);
-    return sortScoreboardGames(filterScoreboardGames(list));
-  }, [usesLiveApi, liveData?.games, selectedLeague]);
+    return sortScoreboardGames(filterScoreboardGames(list), favoriteTeamIdsForLeague);
+  }, [usesLiveApi, liveData?.games, selectedLeague, favoriteTeamIdsForLeague]);
 
   const loadingCopy = isNhl ? SCORES_COPY.loadingNhl : SCORES_COPY.loadingMlb;
   const emptyCopy = isNhl ? SCORES_COPY.emptyNhl : SCORES_COPY.emptyMlb;

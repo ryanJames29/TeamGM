@@ -29,3 +29,7 @@ export const AUTH_COPY = {
   signUpFailed: 'Could not create account.',
   signOutFailed: 'Could not sign out.',
 } as const;
+
+export const NAV_COPY = {
+  back: 'Back',
+} as const;

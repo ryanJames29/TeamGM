@@ -1,20 +1,20 @@
-// Palette: Molten Lava, Flag Red, Papaya Whip, Deep Space Blue, Steel Blue
+// Palette: accent red, Papaya Whip, Deep Space Blue, Steel Blue
 const deepSpaceBlue = '#003049';
 const steelBlue = '#669bbc';
 const papayaWhip = '#fdf0d5';
-const flagRed = '#c1121f';
-const moltenLava = '#780000';
+const accentRed = '#f77777';
+const accentRedStrong = '#e56666';
 
 const teamgm = {
   app: '#001824',
   secondary: deepSpaceBlue,
   surface: '#0f2838',
-  'surface-selected': flagRed,
+  'surface-selected': accentRed,
   'text-primary': papayaWhip,
   'text-muted': '#a4c1d4',
   border: '#4a6d82',
-  accent: flagRed,
-  'accent-strong': moltenLava,
+  accent: accentRed,
+  'accent-strong': accentRedStrong,
   info: steelBlue,
 };
 
