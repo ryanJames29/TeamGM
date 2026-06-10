@@ -172,65 +172,72 @@ export default function ScoresScreen() {
   return (
     <VStack className="flex-1 bg-teamgm-app">
       <ScreenHeader title={SCORES_COPY.title} />
-      <View className="py-4">
-        <LeagueSelector
-          selectedLeague={selectedLeague}
-          onSelect={(league) => dispatch(setSelectedLeague(league))}
-        />
-      </View>
 
-      {showInitialLoader ? (
-        <VStack className="flex-1 items-center justify-center gap-3 px-4">
-          <ActivityIndicator color={Accent} />
-          <Text size="sm" className="text-teamgm-text-muted">
-            {loadingCopy}
-          </Text>
-        </VStack>
-      ) : (
-        <ScrollView
-          className="flex-1 bg-teamgm-app"
-          contentContainerClassName="gap-3 px-4 pb-6"
-          refreshControl={
-            usesLiveApi ? (
-              <RefreshControl
-                refreshing={isPullRefreshing}
-                onRefresh={onLivePullRefresh}
-                tintColor={Accent}
-              />
-            ) : undefined
-          }>
-          {usesLiveApi && liveErrorMessage ? (
-            <Text size="sm" className="text-teamgm-accent">
-              {liveErrorMessage}
-            </Text>
-          ) : null}
-
-          {favoriteErrorMessage ? (
-            <Text size="sm" className="text-teamgm-accent">
-              {favoriteErrorMessage}
-            </Text>
-          ) : null}
-
-          {usesLiveApi && !liveErrorMessage && !isLiveLoading && games.length === 0 ? (
-            <Text size="sm" className="text-teamgm-text-muted">
-              {emptyCopy}
-            </Text>
-          ) : null}
-
-          {games.map((game) => (
-            <GameScoreBox
-              key={game.id}
-              game={game}
-              onFavoriteTeam={
-                usesLiveApi ? (team) => onFavoriteTeam(game.league, team) : undefined
-              }
-              isFavoriteTeam={
-                usesLiveApi ? (teamId) => isFavoriteTeam(game.league, teamId) : undefined
-              }
+      <ScrollView
+        className="flex-1 bg-teamgm-app"
+        contentContainerClassName="gap-3 px-4 pb-6"
+        refreshControl={
+          usesLiveApi ? (
+            <RefreshControl
+              refreshing={isPullRefreshing}
+              onRefresh={onLivePullRefresh}
+              tintColor={Accent}
             />
-          ))}
-        </ScrollView>
-      )}
+          ) : undefined
+        }>
+        <View className="py-4">
+          <LeagueSelector
+            selectedLeague={selectedLeague}
+            onSelect={(league) => dispatch(setSelectedLeague(league))}
+          />
+        </View>
+
+        {showInitialLoader ? (
+          <VStack className="items-center justify-center gap-3 py-12">
+            <ActivityIndicator color={Accent} />
+            <Text size="sm" className="text-teamgm-text-muted">
+              {loadingCopy}
+            </Text>
+          </VStack>
+        ) : null}
+
+        {usesLiveApi && liveErrorMessage ? (
+          <Text size="sm" className="text-teamgm-accent">
+            {liveErrorMessage}
+          </Text>
+        ) : null}
+
+        {favoriteErrorMessage ? (
+          <Text size="sm" className="text-teamgm-accent">
+            {favoriteErrorMessage}
+          </Text>
+        ) : null}
+
+        {!showInitialLoader &&
+        usesLiveApi &&
+        !liveErrorMessage &&
+        !isLiveLoading &&
+        games.length === 0 ? (
+          <Text size="sm" className="text-teamgm-text-muted">
+            {emptyCopy}
+          </Text>
+        ) : null}
+
+        {!showInitialLoader
+          ? games.map((game) => (
+              <GameScoreBox
+                key={game.id}
+                game={game}
+                onFavoriteTeam={
+                  usesLiveApi ? (team) => onFavoriteTeam(game.league, team) : undefined
+                }
+                isFavoriteTeam={
+                  usesLiveApi ? (teamId) => isFavoriteTeam(game.league, teamId) : undefined
+                }
+              />
+            ))
+          : null}
+      </ScrollView>
     </VStack>
   );
 }
