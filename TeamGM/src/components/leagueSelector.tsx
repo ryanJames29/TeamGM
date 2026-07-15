@@ -32,7 +32,7 @@ export function LeagueSelector({ selectedLeague, onSelect }: LeagueSelectorProps
             onPress={() => onSelect(league)}
             className={
               isSelected
-                ? 'rounded-full border border-teamgm-accent bg-teamgm-surface-selected'
+                ? 'rounded-full border border-teamgm-accent/50 bg-teamgm-accent/50'
                 : 'rounded-full border border-teamgm-border bg-teamgm-surface'
             }>
             <ButtonText

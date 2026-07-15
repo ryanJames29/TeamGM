@@ -1,4 +1,30 @@
 import type { MajorLeague, MockGame } from '@/mock-data/types/scores';
+import type { Database } from '@/types/supabase/rawDatabase.types';
+
+export type MyGmCapSummary =
+  Database['public']['Views']['nhl_team_cap_summary']['Row'];
+export type MyGmRosterPlayer =
+  Database['public']['Views']['nhl_roster_with_contracts']['Row'];
+export type MyGmStaffMember =
+  Database['public']['Views']['nhl_team_staff_current']['Row'];
+export type MyGmPlayerStats =
+  Database['public']['Tables']['nhl_player_season_stats']['Row'];
+
+export type MyGmDashboard = {
+  capSummary: MyGmCapSummary | null;
+  roster: MyGmRosterPlayer[];
+  staff: MyGmStaffMember[];
+};
+
+export type MyGmPlayerDetail = {
+  player: MyGmRosterPlayer | null;
+  stats: MyGmPlayerStats | null;
+};
+
+export type MyGmPlayerQueryArgs = {
+  playerId: string;
+  seasonId: string;
+};
 
 export type FavoriteTeamRow = {
   id: string;

@@ -14,9 +14,32 @@ function scheduledTimestamp(game: MockGame): number {
   return Number.isNaN(ms) ? 0 : ms;
 }
 
-/** Live games first, then upcoming, then finals. */
-export function sortScoreboardGames(games: MockGame[]): MockGame[] {
+// Whether either side of the game is a user favorite.
+function involvesFavoriteTeam(game: MockGame, favoriteTeamIds: Set<number>): boolean {
+  const awayId = game.awayTeam.id;
+  const homeId = game.homeTeam.id;
+  return (
+    (awayId != null && favoriteTeamIds.has(awayId)) ||
+    (homeId != null && favoriteTeamIds.has(homeId))
+  );
+}
+
+/** Favorite teams first, then live → upcoming → finals within each group. */
+export function sortScoreboardGames(
+  games: MockGame[],
+  favoriteTeamIds?: Iterable<number>,
+): MockGame[] {
+  const favorites = new Set(favoriteTeamIds ?? []);
+
   return [...games].sort((a, b) => {
+    if (favorites.size > 0) {
+      const aIsFavorite = involvesFavoriteTeam(a, favorites);
+      const bIsFavorite = involvesFavoriteTeam(b, favorites);
+      if (aIsFavorite !== bIsFavorite) {
+        return aIsFavorite ? -1 : 1;
+      }
+    }
+
     const priorityA = STATUS_SORT_ORDER[a.status] ?? 3;
     const priorityB = STATUS_SORT_ORDER[b.status] ?? 3;
     if (priorityA !== priorityB) {

@@ -6,7 +6,7 @@ import { LeagueSelector } from '@/components/leagueSelector';
 import { ScreenHeader } from '@/components/screen-header';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { API_BASE_URL } from '@/constants/api';
+import { API_BASE_URL, LIVE_SCORES_POLL_INTERVAL_MS } from '@/constants/api';
 import { GAME_COPY } from '@/constants/game-copy';
 import { Accent } from '@/constants/theme';
 import { useAuth } from '@/contexts/auth-provider';
@@ -49,9 +49,6 @@ const LIVE_LEAGUES = ['nhl', 'mlb'] as const satisfies readonly MajorLeague[];
 
 type LiveLeague = (typeof LIVE_LEAGUES)[number];
 
-// Backend refreshes live scores every 60s via Redis jobs — match that cadence.
-const LIVE_POLL_INTERVAL_MS = 60_000;
-
 function isLiveLeague(league: MajorLeague): league is LiveLeague {
   return LIVE_LEAGUES.includes(league as LiveLeague);
 }
@@ -82,7 +79,7 @@ export default function ScoresScreen() {
     refetch: refetchNhl,
   } = useGetNhlGamesQuery(undefined, {
     skip: !isNhl || !canReachApi,
-    pollingInterval: isNhl && hasLiveGames ? LIVE_POLL_INTERVAL_MS : 0,
+    pollingInterval: isNhl && hasLiveGames ? LIVE_SCORES_POLL_INTERVAL_MS : 0,
   });
 
   const {
@@ -92,7 +89,7 @@ export default function ScoresScreen() {
     refetch: refetchMlb,
   } = useGetMlbGamesQuery(undefined, {
     skip: !isMlb || !canReachApi,
-    pollingInterval: isMlb && hasLiveGames ? LIVE_POLL_INTERVAL_MS : 0,
+    pollingInterval: isMlb && hasLiveGames ? LIVE_SCORES_POLL_INTERVAL_MS : 0,
   });
 
   const liveData = isNhl ? nhlData : isMlb ? mlbData : undefined;
@@ -146,10 +143,15 @@ export default function ScoresScreen() {
       ? getRtkErrorMessage(favoritesLoadError, GAME_COPY.favoriteLoadError)
       : null;
 
+  const favoriteTeamIdsForLeague = useMemo(() => {
+    const favorite = favoritesByLeague.get(selectedLeague);
+    return favorite ? [favorite.api_sports_team_id] : [];
+  }, [favoritesByLeague, selectedLeague]);
+
   const games = useMemo(() => {
     const list = usesLiveApi ? (liveData?.games ?? []) : getMockScoresByLeague(selectedLeague);
-    return sortScoreboardGames(filterScoreboardGames(list));
-  }, [usesLiveApi, liveData?.games, selectedLeague]);
+    return sortScoreboardGames(filterScoreboardGames(list), favoriteTeamIdsForLeague);
+  }, [usesLiveApi, liveData?.games, selectedLeague, favoriteTeamIdsForLeague]);
 
   const loadingCopy = isNhl ? SCORES_COPY.loadingNhl : SCORES_COPY.loadingMlb;
   const emptyCopy = isNhl ? SCORES_COPY.emptyNhl : SCORES_COPY.emptyMlb;
@@ -170,65 +172,72 @@ export default function ScoresScreen() {
   return (
     <VStack className="flex-1 bg-teamgm-app">
       <ScreenHeader title={SCORES_COPY.title} />
-      <View className="py-4">
-        <LeagueSelector
-          selectedLeague={selectedLeague}
-          onSelect={(league) => dispatch(setSelectedLeague(league))}
-        />
-      </View>
 
-      {showInitialLoader ? (
-        <VStack className="flex-1 items-center justify-center gap-3 px-4">
-          <ActivityIndicator color={Accent} />
-          <Text size="sm" className="text-teamgm-text-muted">
-            {loadingCopy}
-          </Text>
-        </VStack>
-      ) : (
-        <ScrollView
-          className="flex-1 bg-teamgm-app"
-          contentContainerClassName="gap-3 px-4 pb-6"
-          refreshControl={
-            usesLiveApi ? (
-              <RefreshControl
-                refreshing={isPullRefreshing}
-                onRefresh={onLivePullRefresh}
-                tintColor={Accent}
-              />
-            ) : undefined
-          }>
-          {usesLiveApi && liveErrorMessage ? (
-            <Text size="sm" className="text-teamgm-accent">
-              {liveErrorMessage}
-            </Text>
-          ) : null}
-
-          {favoriteErrorMessage ? (
-            <Text size="sm" className="text-teamgm-accent">
-              {favoriteErrorMessage}
-            </Text>
-          ) : null}
-
-          {usesLiveApi && !liveErrorMessage && !isLiveLoading && games.length === 0 ? (
-            <Text size="sm" className="text-teamgm-text-muted">
-              {emptyCopy}
-            </Text>
-          ) : null}
-
-          {games.map((game) => (
-            <GameScoreBox
-              key={game.id}
-              game={game}
-              onFavoriteTeam={
-                usesLiveApi ? (team) => onFavoriteTeam(game.league, team) : undefined
-              }
-              isFavoriteTeam={
-                usesLiveApi ? (teamId) => isFavoriteTeam(game.league, teamId) : undefined
-              }
+      <ScrollView
+        className="flex-1 bg-teamgm-app"
+        contentContainerClassName="gap-3 px-4 pb-6"
+        refreshControl={
+          usesLiveApi ? (
+            <RefreshControl
+              refreshing={isPullRefreshing}
+              onRefresh={onLivePullRefresh}
+              tintColor={Accent}
             />
-          ))}
-        </ScrollView>
-      )}
+          ) : undefined
+        }>
+        <View className="py-4">
+          <LeagueSelector
+            selectedLeague={selectedLeague}
+            onSelect={(league) => dispatch(setSelectedLeague(league))}
+          />
+        </View>
+
+        {showInitialLoader ? (
+          <VStack className="items-center justify-center gap-3 py-12">
+            <ActivityIndicator color={Accent} />
+            <Text size="sm" className="text-teamgm-text-muted">
+              {loadingCopy}
+            </Text>
+          </VStack>
+        ) : null}
+
+        {usesLiveApi && liveErrorMessage ? (
+          <Text size="sm" className="text-teamgm-accent">
+            {liveErrorMessage}
+          </Text>
+        ) : null}
+
+        {favoriteErrorMessage ? (
+          <Text size="sm" className="text-teamgm-accent">
+            {favoriteErrorMessage}
+          </Text>
+        ) : null}
+
+        {!showInitialLoader &&
+        usesLiveApi &&
+        !liveErrorMessage &&
+        !isLiveLoading &&
+        games.length === 0 ? (
+          <Text size="sm" className="text-teamgm-text-muted">
+            {emptyCopy}
+          </Text>
+        ) : null}
+
+        {!showInitialLoader
+          ? games.map((game) => (
+              <GameScoreBox
+                key={game.id}
+                game={game}
+                onFavoriteTeam={
+                  usesLiveApi ? (team) => onFavoriteTeam(game.league, team) : undefined
+                }
+                isFavoriteTeam={
+                  usesLiveApi ? (teamId) => isFavoriteTeam(game.league, teamId) : undefined
+                }
+              />
+            ))
+          : null}
+      </ScrollView>
     </VStack>
   );
 }
