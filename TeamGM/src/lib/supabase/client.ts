@@ -4,11 +4,12 @@ import 'react-native-url-polyfill/auto';
 import { createClient, processLock } from '@supabase/supabase-js';
 
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/constants/supabase';
+import type { Database } from '@/types/supabase/rawDatabase.types';
 
 import { supabaseAuthStorage } from './auth-storage';
 
 // https://supabase.com/docs/guides/auth/quickstarts/react-native
-export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     storage: supabaseAuthStorage,
     autoRefreshToken: true,
