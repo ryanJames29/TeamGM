@@ -1,56 +1,65 @@
-# Welcome to your Expo app 👋
+# TeamGM
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A sports companion app for fans: live NHL and MLB scores, box scores, AI game briefings for your favorite team, and a front-office style dashboard for managing a team.
 
-## Get started
+> 🚧 **In development.** Core features work end to end; see [Status](#status) below.
 
-1. Install dependencies
+<!-- Add 2–3 screenshots: Scores, Game detail, myGM -->
+<p>
+  <img src="docs/screenshots/scores.png" width="250" />
+  <img src="docs/screenshots/game-detail.png" width="250" />
+  <img src="docs/screenshots/mygm.png" width="250" />
+</p>
 
-   ```bash
-   npm install
-   ```
+## Features
 
-2. Start the app
+- **Live scores**: NHL and MLB scoreboards with a league selector. Scores refresh quietly in the background; pull to refresh on demand.
+- **Game detail**: box scores and head-to-head history for each matchup.
+- **AI briefings**: a short, fan-friendly preview for your favorite team (why the next game matters, recent form, a concern level), generated only from real scores and standings.
+- **myGM dashboard**: roster, salary cap, and player detail screens for a team.
+- **Accounts**: sign up and sign in with Supabase Auth.
 
-   ```bash
-   npx expo start
-   ```
+## Tech stack
 
-In the output, you'll find options to open the app in a
+- **React Native + Expo** (Expo Router, file-based routing), **TypeScript**
+- **Redux Toolkit + RTK Query** for data fetching, caching, and polling
+- **Supabase** for auth and typed data access
+- **gluestack UI + NativeWind (Tailwind)** for UI, **Reanimated** for motion
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Architecture
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+The app never calls the sports data provider directly. It talks to the [TeamGM API](https://github.com/ryanJames29/TeamGM-LLM-API), a FastAPI backend that fetches scores on a schedule, caches them in Redis, and generates the AI briefings.
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+TeamGM app  →  TeamGM API (FastAPI)  →  Redis cache  ←  scheduled jobs  →  API-Sports
+                       ↓
+                 OpenAI (briefings) · Supabase (auth, user data)
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Running locally
 
-### Other setup steps
+Requires Node.js and the [TeamGM API](https://github.com/ryanJames29/TeamGM-LLM-API) running locally (see its README).
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```bash
+cd TeamGM
+npm install
+cp .env.example .env   # set EXPO_PUBLIC_API_URL and your Supabase keys
+npx expo start -c
+```
 
-## Learn more
+`EXPO_PUBLIC_API_URL` should point at the API (default `http://127.0.0.1:8000`). On a physical phone, use your computer's LAN IP; on the Android emulator, use `http://10.0.2.2:8000`.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Status
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+**Done**
+- NHL and MLB scoreboards with background polling
+- Game detail with box scores and head-to-head history
+- AI briefings for a favorite team
+- myGM dashboard (roster, salary cap, player detail)
+- Supabase auth
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+**Next**
+<!-- Edit this list to match your plans -->
+- More leagues
+- Deploy the API and ship a TestFlight / internal test build
+- Polish and tests across screens
